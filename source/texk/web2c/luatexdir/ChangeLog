@@ -1,3 +1,6 @@
+2023-11-02  Luigi Scarso <luigi.scarso@gmail.com> 
+	* Fix for dubious cff fonts (not following the 1000 unit recommendation) (Hans Hagen).
+
 2023-10-04  Karl Berry  <karl@freefriends.org>
 
 	* luaoutputdir.test: new test for Lua-level reading from a given
