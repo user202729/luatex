@@ -2818,6 +2818,32 @@ Like kpsewhich's \type {-expand-braces}:
 
 \stopsubsection
 
+\startsubsection[title={\type {in_name_ok}}]
+
+\libindex{in_name_ok}
+
+Return true if \type{fname} is acceptable to open for reading. 
+
+\startfunctioncall
+<boolean> r = kpse_in_name_ok(<string> fname)
+\stopfunctioncall
+
+\stopsubsection
+
+\startsubsection[title={\type {out_name_ok}}]
+
+\libindex{out_name_ok}
+
+Return true if \type{fname} is acceptable to open for writing. 
+
+\startfunctioncall
+<boolean> r = kpse_out_name_ok(<string> fname)
+\stopfunctioncall
+
+\stopsubsection
+
+
+
 \startsubsection[title={\type {show_path}}]
 
 \libindex{show_path}
