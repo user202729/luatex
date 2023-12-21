@@ -1,6 +1,8 @@
 2023-12-21  Luigi Scarso <luigi.scarso@gmail.com> 
-	* New commandline switch --[no-]check-dvi-total-pages  exit when DVI exceeds 65535 pages (default: check).
+        * LuaTeX 1.17.1	
+        * New commandline switch --[no-]check-dvi-total-pages  exit when DVI exceeds 65535 pages (default: check).
           This breaks backward compatibility.
+
 
 2023-11-20  Karl Berry  <karl@freefriends.org>
 
