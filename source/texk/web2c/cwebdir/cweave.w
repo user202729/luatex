@@ -2,7 +2,7 @@
 % This program by Silvio Levy and Donald E. Knuth
 % is based on a program by Knuth.
 % It is distributed WITHOUT ANY WARRANTY, express or implied.
-% Version 4.10 --- August 2023
+% Version 4.11 --- December 2023
 
 % Copyright (C) 1987,1990,1993,2000 Silvio Levy and Donald E. Knuth
 
@@ -32,11 +32,11 @@
 \def\skipxTeX{\\{skip\_\TEX/}}
 \def\copyxTeX{\\{copy\_\TEX/}}
 
-\def\title{CWEAVE (Version 4.10)}
+\def\title{CWEAVE (Version 4.11)}
 \def\topofcontents{\null\vfill
   \centerline{\titlefont The {\ttitlefont CWEAVE} processor}
   \vskip 15pt
-  \centerline{(Version 4.10)}
+  \centerline{(Version 4.11)}
   \vfill}
 \def\botofcontents{\vfill
 \noindent
@@ -67,7 +67,7 @@ Crusius, and others who have contributed improvements.
 The ``banner line'' defined here should be changed whenever \.{CWEAVE}
 is modified.
 
-@d banner "This is CWEAVE (Version 4.10)"
+@d banner "This is CWEAVE (Version 4.11)"
 
 @c
 @<Include files@>@/
@@ -564,12 +564,9 @@ scanning routines.
 representation by means of the table |ccode|.
 
 @<Private...@>=
-static eight_bits ccode[256]; /* meaning of a char following \.{@@} */
+static eight_bits ccode[256]={ignore}; /* meaning of a char following \.{@@} */
 
-@ @<Set ini...@>= {
-  int c; /* must be |int| so the |for| loop will end */
-  for (c=0; c<256; c++) ccode[c]=ignore;
-}
+@ @<Set ini...@>=
 ccode[' ']=ccode['\t']=ccode['\n']=ccode['\v']=ccode['\r']=ccode['\f']
   =ccode['*']=new_section;
 ccode['@@']='@@'; /* `quoted' at sign */
@@ -4576,12 +4573,9 @@ check_complete(); /* was all of the change file used? */
 @ Just before the index comes a list of all the changed sections, including
 the index section itself.
 
-@<Private...@>=
-static sixteen_bits k_section; /* runs through the sections */
-
-@ @<Tell about changed sections@>=
+@<Tell about changed sections@>=
 /* remember that the index is already marked as changed */
-k_section=0;
+sixteen_bits k_section=0; /* runs through the sections */
 while (!changed_section[++k_section]);
 out_str("\\ch ");
 @.\\ch@>
@@ -4602,27 +4596,24 @@ list for character |c| begins at location |bucket[c]| and continues through
 the |blink| array.
 
 @<Private...@>=
-static name_pointer bucket[256];
+static name_pointer bucket[256]={NULL};
 static name_pointer next_name; /* successor of |cur_name| when sorting */
 static name_pointer blink[max_names]; /* links in the buckets */
 
 @ To begin the sorting, we go through all the hash lists and put each entry
 having a nonempty cross-reference list into the proper bucket.
 
-@<Do the first pass...@>= {
-int c;
-for (c=0; c<256; c++) bucket[c]=NULL;
+@<Do the first pass...@>=
 for (hash_ptr=hash; hash_ptr<=hash_end; hash_ptr++) {
   next_name=*hash_ptr;
   while (next_name) {
     cur_name=next_name; next_name=cur_name->link;
     if (cur_name->xref!=(void *)xmem) {
-      c=(cur_name->byte_start)[0];
+      int c=(cur_name->byte_start)[0];
       if (xisupper(c)) c=tolower(c);
       blink[cur_name-name_dir]=bucket[c]; bucket[c]=cur_name;
     }
   }
-}
 }
 
 @ During the sorting phase we shall use the |cat| and |trans| arrays from
@@ -4751,11 +4742,8 @@ while (sort_ptr>scrap_info) {
     cur_name=next_name; next_name=blink[cur_name-name_dir];
     cur_byte=cur_name->byte_start+cur_depth;
     if (cur_byte==(cur_name+1)->byte_start) c=0; /* hit end of the name */
-    else {
-      c=*cur_byte;
-      if (xisupper(c)) c=tolower(c);
-    }
-  blink[cur_name-name_dir]=bucket[c]; bucket[c]=cur_name;
+    else if (xisupper(c=*cur_byte)) c=tolower(c);
+    blink[cur_name-name_dir]=bucket[c]; bucket[c]=cur_name;
   } while (next_name);
   --sort_ptr; unbucket(cur_depth+1);
 }

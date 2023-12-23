@@ -1,3 +1,32 @@
+2023-12-02  Andreas Scherer  <https://ascherer.github.io>
+
+	* ctangleboot.cin: CWEB 4.11 release.
+
+2023-11-24  TANAKA Takuji  <ttk@t-lab.opal.ne.jp>
+
+	* tests/fn-generate.perl: Add test for file names with
+	over-BMP (4byte UTF-8).
+	https://tug.org/pipermail/tex-live/2023-November/049685.html
+
+2023-11-19  Karl Berry  <karl@freefriends.org>
+
+	* tex.ch,
+	* mf.ch (Undump the dynamic memory): improve fmt/base corruption
+	checks, from DRF.
+
+2023-11-19  Andreas Scherer  <https://ascherer.github.io>
+
+	* ctangleboot.cin,
+	* cwebboot.cin: Use zero-initialisation.
+
+2023-11-15  Karl Berry  <karl@freefriends.org>
+
+	* tex.ch,
+	* mf.ch (Undump the dynamic memory): check that p does not
+	become too small, due to fmt/base corruption.
+	Report from Gregory James DUCK to Karl, 14 Sep 2023.
+	Found with a fuzz tester similar to AFL-fuzz. 
+
 2023-10-25  Andreas Scherer  <https://ascherer.github.io>
 
 	* weave.ch: Fine print for command-line options.
