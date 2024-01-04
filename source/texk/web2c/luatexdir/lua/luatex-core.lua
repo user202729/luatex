@@ -206,6 +206,11 @@ if saferoption == 1 then
     lfs.rmdir  = installdummy("lfs.rmdir")
     lfs.mkdir  = installdummy("lfs.mkdir")
 
+
+    for _,v  in pairs(package.loaded.debug) do 
+     v = nil 
+    end
+    package.loaded.debug = nil
     debug = nil
 
     -- os.[execute|os.spawn|os.exec] already are shellescape aware)

@@ -1,3 +1,7 @@
+2024-04-04  Luigi Scarso <luigi.scarso@gmail.com> 
+        * With --safer now each function in debug is nil as also package.loaded.debug = nil and  debug = nil 
+
+
 2023-12-21  Luigi Scarso <luigi.scarso@gmail.com> 
         * LuaTeX 1.17.1	
         * New commandline switch --[no-]check-dvi-total-pages  exit when DVI exceeds 65535 pages (default: check).
