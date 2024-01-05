@@ -50,6 +50,14 @@ if kpseused == 1 then
 
     io.saved_lines              = io_lines -- always readonly
     mt.saved_lines              = mt_lines -- always readonly
+ 
+    --  nil debug    
+    for k,_  in pairs(package.loaded.debug) do 
+     package.loaded.debug[k] = nil 
+    end
+    package.loaded.debug = nil
+    debug = nil
+
 
     local function luatex_io_open(name,how)
         if not how then
