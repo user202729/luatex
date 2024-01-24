@@ -1,4 +1,21 @@
-2024-04-04  Luigi Scarso <luigi.scarso@gmail.com> 
+2024-01-24  Luigi Scarso <luigi.scarso@gmail.com>
+        * New 	kpse.in_name_ok_silent_extended and kpse.in_name_ok_silent_extended
+        * In kpse mode
+	  os.rename,
+          os.remove
+          lfs.attributes,
+	  lfs.chdir,
+	  lfs.lock_dir,
+	  lfs.dir,
+	  lfs.link ,
+	  lfs.mkdir,
+	  lfs.rmdir,
+	  lfs.symlinkattributes,
+	  lfs.touch 
+        are now checked with kpse.in_name_ok_silent_extended  *and* kpse.out_name_ok_silent_extended
+
+
+2024-01-04  Luigi Scarso <luigi.scarso@gmail.com> 
         * With --safer now each function in debug is nil as also package.loaded.debug = nil and  debug = nil 
 
 
