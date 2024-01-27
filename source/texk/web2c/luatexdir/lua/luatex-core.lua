@@ -197,7 +197,7 @@ if kpseused == 1 then
     end
 
     local function luatex_lfs_attributes(filepath, opt)
-      local check1 = kpse_in_name_ok_silent_extended(filepath) and kpse_out_name_ok_silent_extended(filepath)  
+      local check1 = kpse_in_name_ok_silent_extended(filepath)
       if check1 then 
        return lfs_attributes(filepath,opt)
       else
@@ -224,7 +224,7 @@ if kpseused == 1 then
     end
 
     local function luatex_lfs_dir(name)
-     local check1 = kpse_in_name_ok_silent_extended(name) and kpse_out_name_ok_silent_extended(name)  
+     local check1 = kpse_in_name_ok_silent_extended(name)
      if check1 then 
        return lfs_dir(name)
       else
@@ -265,7 +265,7 @@ if kpseused == 1 then
     end
 
     local function luatex_lfs_symlinkattributes(filepath,aname)
-     local check1 = kpse_in_name_ok_silent_extended(filepath) and kpse_out_name_ok_silent_extended(filepath)  
+     local check1 = kpse_in_name_ok_silent_extended(filepath) 
      if check1 then 
        return lfs_symlinkattributes(filepath,aname)
       else
