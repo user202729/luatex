@@ -1,9 +1,9 @@
-This is kpathsea.info, produced by makeinfo version 7.0.2 from
+This is kpathsea.info, produced by makeinfo version 7.1 from
 kpathsea.texi.
 
 This file documents the Kpathsea library for path searching.
 
-   Copyright © 1996–2024 Karl Berry & Olaf Weber.
+   Copyright © 1996-2024 Karl Berry & Olaf Weber.
 
    Permission is granted to make and distribute verbatim copies of this
 manual provided the copyright notice and this permission notice are
@@ -64,7 +64,7 @@ File: kpathsea.info,  Node: Introduction,  Next: unixtex.ftp,  Prev: Top,  Up: T
 This manual corresponds to version 6.4.0 of the Kpathsea library,
 released in January 2024.
 
-   The library’s fundamental purpose is to return a filename from a list
+   The library's fundamental purpose is to return a filename from a list
 of directories specified by the user, similar to what shells do when
 looking up program names to execute.
 
@@ -98,7 +98,7 @@ See accompanying files for the text of the GNU licenses, or
 <https://gnu.org/licenses>.
 
    If you know enough about TeX to be reading this manual, then you (or
-your institution) should consider joining the TeX Users Group (if you’re
+your institution) should consider joining the TeX Users Group (if you're
 already a member, thanks!).  TUG produces the periodical ‘TUGboat’,
 sponsors an annual meeting and publishes the proceedings, and arranges
 courses on TeX for all levels of users throughout the world.  See
@@ -116,7 +116,7 @@ File: kpathsea.info,  Node: History,  Up: Introduction
 
 This section is for those people who are curious about how the library
 came about.  If you like to read historical accounts of software, we
-urge you to seek out the GNU Autoconf manual and the “Errors of TeX”
+urge you to seek out the GNU Autoconf manual and the "Errors of TeX"
 paper by Don Knuth, published in his book ‘Digital Typography’, among
 other places.
 
@@ -126,7 +126,7 @@ Tim Morgan and I were jointly maintaining it for a time.  (I should
 mention here that Tim had made Web2c into a real distribution long
 before I had ever used it or even heard of it, and Tom Rokicki did the
 original implementation.  When I started, I was using ‘pxp’ and ‘pc’ on
-VAX 11/750’s and the hot new Sun 2 machines.)
+VAX 11/750's and the hot new Sun 2 machines.)
 
    It must have been later in 1990 and 1991 that I started working on
 ‘TeX for the Impatient’.  Dvips, Xdvi, Web2c, and the GNU fontutils
@@ -134,23 +134,23 @@ VAX 11/750’s and the hot new Sun 2 machines.)
 variables, and, more importantly, had different bugs in their path
 searching.  This became extremely painful, as I was stressing everything
 to the limit working on the book.  I also desperately wanted to
-implement subdirectory searching, since I couldn’t stand putting
-everything in one big directory, and also couldn’t stand having to
+implement subdirectory searching, since I couldn't stand putting
+everything in one big directory, and also couldn't stand having to
 explicitly specify ‘cm’, ‘pandora’, ... in a path.
 
    In the first incarnation, I just hacked separately on each
-program—that was the original subdirectory searching code in both Xdvi
+program--that was the original subdirectory searching code in both Xdvi
 and Dvips.  That is, I tried to go with the flow in each program, rather
-than changing the program’s calling sequences to conform to new
+than changing the program's calling sequences to conform to new
 routines.
 
    Then, as bugs inevitably appeared, I found I was fixing the same
 thing three times (Web2c and fontutils were already sharing code, since
-I maintained both of those—there was no Dvipsk or Xdvik or Dviljk at
+I maintained both of those--there was no Dvipsk or Xdvik or Dviljk at
 this point).  After a while, I finally started sharing source files.
-They weren’t yet a library, though.  I just kept things up to date with
+They weren't yet a library, though.  I just kept things up to date with
 shell scripts.  (I was developing on a 386 running ISC 2.2 at the time,
-and so didn’t have symbolic links.  An awful experience.)
+and so didn't have symbolic links.  An awful experience.)
 
    The ChangeLogs for Xdvik and Dvipsk record initial releases of those
 distributions in May and June 1992.  I think it was because I was tired
@@ -159,14 +159,14 @@ because of the path searching.  Autoconf was being developed by David
 MacKenzie and others, and I was adapting it to TeX and friends.
 
    I started to make a separate library that other programs could link
-with on my birthday in April 1993, according to the ChangeLog.  I don’t
+with on my birthday in April 1993, according to the ChangeLog.  I don't
 remember exactly why I finally took the time to make it a separate
 library; a conversation with david zuhn initiated it.  Just seemed like
 it was time.
 
    Dviljk got started in March 1994 after I bought a Laserjet 4.
 (Kpathsea work got suspended while Norm Walsh and I, with Gustaf
-Neumann’s help, implemented a way for TeX to get at all those neat
+Neumann's help, implemented a way for TeX to get at all those neat
 builtin LJ4 fonts ... such a treat to have something to typeset in
 besides Palatino!)
 
@@ -175,18 +175,18 @@ path-searching features in Kpathsea that I plan to, driven beyond my
 initial goals by Thomas Esser and others.  I then started to integrate
 Web2c with Kpathsea.  After the release of a stable Web2c, I hope to be
 able to stop development, and turn most of my attention back to making
-fonts for GNU. (Always assuming Micros**t hasn’t completely obliterated
-Unix by then, or that software patents haven’t stopped software
+fonts for GNU. (Always assuming Micros**t hasn't completely obliterated
+Unix by then, or that software patents haven't stopped software
 development by anybody smaller than a company with a
 million-dollar-a-year legal budget.  Which is actually what I think is
-likely to happen, but that’s another story...)
+likely to happen, but that's another story...)
 
    [Olaf writes.]  At the end of 1997, Unix is still alive and kicking,
 individuals still develop software, and Web2c development still
 continues.  Karl had been looking for some time for someone to take up
 part of the burden, and I volunteered.
 
-   [Karl writes again.]  Indeed, time goes on.  As of 2006 or so, Olaf’s
+   [Karl writes again.]  Indeed, time goes on.  As of 2006 or so, Olaf's
 available time for Kpathsea was reduced, and I started taking overall
 care of it again, although I did not do any significant new development.
 In 2009, Taco Hoekwater implemented a major rearrangement to make the
@@ -222,7 +222,7 @@ system from scratch, it is more reliable and less work to retrieve these
 files as part of a larger package.
 
    In any case, the Stanford ftp site is not the canonical source for
-anything except what was created as part of Knuth’s original TeX, so do
+anything except what was created as part of Knuth's original TeX, so do
 not rely on any other files available there being up-to-date.  The best
 place to check for up-to-date files is CTAN (the Comprehensive TeX
 Archive Network), <https://ctan.org>.
@@ -234,7 +234,7 @@ File: kpathsea.info,  Node: Security,  Next: TeX directory structure,  Prev: uni
 **********
 
 None of the programs in the TeX system require any special system
-privileges, so there’s no first-level security concern of people gaining
+privileges, so there's no first-level security concern of people gaining
 illegitimate root access.
 
    Thus, the general goal of our security measures is to make an
@@ -262,7 +262,7 @@ have been taken to make the TeX system safe in this regard:
    • LuaTeX is a special case.  Since Lua is a general-purpose
      programming language, it has all the usual functionality for
      writing files, executing shell commands, and plenty more.  When
-     LuaTeX is used in its so-called “kpse” mode, as with LuaLaTeX, we
+     LuaTeX is used in its so-called "kpse" mode, as with LuaLaTeX, we
      have nevertheless done our best to also make it safe to execute by
      default, by disabling or restricting the various problematic Lua
      features.  *Note Safe filenames::, for a bit more about this.  (By
@@ -274,7 +274,7 @@ have been taken to make the TeX system safe in this regard:
      unchecked) arithmetic overflow and other nefarious constructs (some
      are listed at <https://tug.org/texmfbug/nobug.html>.  While
      disturbing, TeX has no special system access and so these crashes
-     don’t present a security risk.
+     don't present a security risk.
 
    • One more issue is the desire for a globally writable font cache
      directory; see the section below for this (*note Global font cache
@@ -290,12 +290,12 @@ File: kpathsea.info,  Node: Global font cache and security,  Up: Security
 3.1 Global font cache and security
 ==================================
 
-It’s useful to make arbitrary fonts on user demand with ‘mktexpk’ and
+It's useful to make arbitrary fonts on user demand with ‘mktexpk’ and
 friends.  Where do these files get installed?  By default, the ‘mktexpk’
 distributed with Kpathsea assumes a world-writable ‘/var/tmp’ directory;
 this is a simple and convenient approach, but it does not suit all
 situations, because it means that a local cache of fonts is created on
-every user’s system.
+every user's system.
 
    To avoid this duplication, many people consider a shared, globally
 writable font tree desirable, in spite of the potential security
@@ -310,7 +310,7 @@ directories under ‘texmf’ be append-only with an option in ‘mktex.cnf’.
    Another approach is to establish a group (or user) for TeX files,
 make the ‘texmf’ tree writable only to that group (or user), and make
 ‘mktexpk’ et al. setgid to that group (or setuid to that user).  Then
-users must invoke the scripts to install things.  (If you’re worried
+users must invoke the scripts to install things.  (If you're worried
 about the inevitable security holes in scripts, then you could write a C
 wrapper to exec the script.)
 
@@ -446,9 +446,9 @@ a path ‘.:/dir’, Kpathsea checks each element of the path in turn: first
 ‘./foo’, then ‘/dir/foo’, returning the first match (or possibly all
 matches).
 
-   The “colon” and “slash” mentioned here aren’t necessarily ‘:’ and ‘/’
+   The "colon" and "slash" mentioned here aren't necessarily ‘:’ and ‘/’
 on non-Unix systems.  Kpathsea tries to adapt to other operating
-systems’ conventions.
+systems' conventions.
 
    To check a particular path element E, Kpathsea first sees if a
 prebuilt database (*note Filename database::) applies to E, i.e., if the
@@ -464,7 +464,7 @@ file being searched for.  (To help speed future lookups of files in the
 same directory, the directory in which a file is found is floated to the
 top of the directory list.)
 
-   The “file must exist” condition comes into play with VF files and
+   The "file must exist" condition comes into play with VF files and
 input files read by the TeX ‘\openin’ command.  These files might very
 well not exist (consider ‘cmr10.vf’), and so it would be wrong to search
 the disk for them.  Therefore, if you fail to update ‘ls-R’ when you
@@ -484,7 +484,7 @@ This is not done on Windows.  *Note Casefolding search::.
 
    Although the simplest and most common path element is a directory
 name, Kpathsea supports additional features in search paths: layered
-default values, environment variable names, config file values, users’
+default values, environment variable names, config file values, users'
 home directories, and recursive subdirectory searching.  Thus, we say
 that Kpathsea “expands” a path element, meaning transforming all the
 magic specifications into the basic directory name or names.  This
@@ -526,7 +526,7 @@ In the order in which Kpathsea looks for them:
      the program being run is named ‘latex’.
 
   2. A program-specific configuration file, e.g., an ‘S /a:/b’ line in
-     Dvips’ ‘config.ps’ (*note (dvips)Config files::).
+     Dvips' ‘config.ps’ (*note (dvips)Config files::).
 
   3. A line in a Kpathsea configuration file ‘texmf.cnf’, e.g.,
      ‘TEXINPUTS=/c:/d’ (see below).
@@ -541,7 +541,7 @@ expansion::).
 
 * Menu:
 
-* Config files::        Kpathsea’s runtime config files (texmf.cnf).
+* Config files::        Kpathsea's runtime config files (texmf.cnf).
 
 
 File: kpathsea.info,  Node: Config files,  Up: Path sources
@@ -562,7 +562,7 @@ later files.  Thus, if the search path is ‘.:$TEXMF’, values from
 ‘./texmf.cnf’ override those from ‘$TEXMF/texmf.cnf’.
 
    If Kpathsea cannot find any ‘texmf.cnf’ file, it reports a warning
-including all the directories it checked.  If you don’t want to see this
+including all the directories it checked.  If you don't want to see this
 warning, set the environment variable ‘KPATHSEA_WARNING’ to the single
 character ‘0’ (zero, not oh).
 
@@ -573,7 +573,7 @@ mentions most features.  The format of ‘texmf.cnf’ files follows:
    • Comments start with ‘%’ or ‘#’, either at the beginning of a line
      or preceded by whitespace, and continue to the end of the line.
      That is, similar to most shells, a comment character in the
-     “middle” of a value does not start a comment.  Examples:
+     "middle" of a value does not start a comment.  Examples:
 
           % this is a comment
           var = a%b  % but the value of var will be "a%b"
@@ -644,7 +644,7 @@ depends on the context in which it is used.  The rules are inherent in
 the multiple levels of interpretation of the configuration (parsing,
 expansion, search, ...) and so cannot be concisely stated,
 unfortunately.  There is no general escape mechanism; in particular, ‘\’
-is not an “escape character” in ‘texmf.cnf’ files.  When it comes
+is not an "escape character" in ‘texmf.cnf’ files.  When it comes
 choosing directory names for installation, it is safest to avoid them
 all.
 
@@ -659,7 +659,7 @@ File: kpathsea.info,  Node: Path expansion,  Next: Casefolding search,  Prev: Pa
 Kpathsea recognizes certain special characters and constructions in
 search paths, similar to that in shells.  As a general example:
 ‘~$USER/{foo,bar}//baz’ expands to all subdirectories under directories
-‘foo’ and ‘bar’ in $USER’s home directory that contain a directory or
+‘foo’ and ‘bar’ in $USER's home directory that contain a directory or
 file ‘baz’.
 
    These expansions are explained in the sections below.
@@ -698,7 +698,7 @@ then the final value used for searching will be:
 
      /home/karl:.:$TEXMF//tex
 
-   Put another way, default expansion works on “formats” (search paths),
+   Put another way, default expansion works on "formats" (search paths),
 and not directly on environment variables.  Example, showing the
 trailing ‘:’ ignored in the first case and expanded in the second:
 
@@ -709,9 +709,9 @@ trailing ‘:’ ignored in the first case and expanded in the second:
 
    Since Kpathsea looks for multiple configuration files, it would be
 natural to expect that (for example) an extra colon in ‘./texmf.cnf’
-would expand to the path in ‘$TEXMF/texmf.cnf’.  Or, with Dvips’
+would expand to the path in ‘$TEXMF/texmf.cnf’.  Or, with Dvips'
 configuration files, that an extra colon in ‘config.$PRINTER’ would
-expand to the path in ‘config.ps’.  This doesn’t happen.  It’s not clear
+expand to the path in ‘config.ps’.  This doesn't happen.  It's not clear
 this would be desirable in all cases, and trying to devise a way to
 specify the path to which the extra colon should expand seemed truly
 baroque.
@@ -721,7 +721,7 @@ in more than one place, Kpathsea changes only one extra ‘:’ and leaves
 any others in place (they will eventually be ignored).  Kpathsea checks
 first for a leading ‘:’, then a trailing ‘:’, then a doubled ‘:’.
 
-   You can trace this by debugging “paths” (*note Debugging::).  Default
+   You can trace this by debugging "paths" (*note Debugging::).  Default
 expansion is implemented in the source file ‘kpathsea/kdefault.c’.
 
 
@@ -741,7 +741,7 @@ the next ‘}’ (braces may not be nested around variable names).
 Otherwise, Kpathsea gives a warning and ignores the ‘$’ and its
 following character.
 
-   You must quote the $’s and braces as necessary for your shell.
+   You must quote the $'s and braces as necessary for your shell.
 _Shell_ variable values cannot be seen by Kpathsea, i.e., ones defined
 by ‘set’ in C shells and without ‘export’ in Bourne shells.
 
@@ -769,7 +769,7 @@ A leading ‘~’ in a path element is replaced by the value of the
 environment variable ‘HOME’, or ‘.’ if ‘HOME’ is not set.  On Windows,
 the environment variable ‘USERPROFILE’ is checked instead of ‘HOME’.
 
-   A leading ‘~USER’ in a path element is replaced by USER’s home
+   A leading ‘~USER’ in a path element is replaced by USER's home
 directory from the system ‘passwd’ database.
 
    For example,
@@ -797,7 +797,7 @@ File: kpathsea.info,  Node: Brace expansion,  Next: KPSE_DOT expansion,  Prev: T
      foo/{1,2}/baz
 
 expands to ‘foo/1/baz:foo/2/baz’.  ‘:’ is the path separator on the
-current system; e.g., on a Windows system, it’s ‘;’.
+current system; e.g., on a Windows system, it's ‘;’.
 
    Braces can be nested; for example, ‘x{A,B{1,2}}y’ expands to
 ‘xAy:xB1y:xB2y’.
@@ -837,7 +837,7 @@ Two or more consecutive slashes in a path element following a directory
 D is replaced by all subdirectories of D: first those subdirectories
 directly under D, then the subsubdirectories under those, and so on.  At
 each level, the order in which the directories are searched is
-unspecified.  (It’s “directory order”, and definitely not alphabetical.)
+unspecified.  (It's "directory order", and definitely not alphabetical.)
 
    If you specify any filename components after the ‘//’, only
 subdirectories which match those components are included.  For example,
@@ -846,7 +846,7 @@ and so on, but not ‘/a/b/c’ or ‘/a/1’.
 
    You can include multiple ‘//’ constructs in the path.
 
-   ‘//’ at the beginning of a path is ignored; you didn’t really want to
+   ‘//’ at the beginning of a path is ignored; you didn't really want to
 search every directory on the system, did you?
 
    I should mention one related implementation trick, which I took from
@@ -857,8 +857,8 @@ it.
 the POSIX specification), a directory which contains no subdirectories
 will have exactly two links (namely, one for ‘.’ and one for ‘..’).
 That is to say, the ‘st_nlink’ field in the ‘stat’ structure will be
-two.  Thus, we don’t have to stat everything in the bottom-level (leaf)
-directories—we can just check ‘st_nlink’, notice it’s two, and do no
+two.  Thus, we don't have to stat everything in the bottom-level (leaf)
+directories--we can just check ‘st_nlink’, notice it's two, and do no
 more work.
 
    But if you have a directory that contains a single subdirectory and
@@ -868,7 +868,7 @@ one of those 501 entries.  Therein lies slowness.
    You can disable the trick by undefining ‘ST_NLINK_TRICK’ in
 ‘kpathsea/config.h’.  (It is undefined by default except under Unix.)
 
-   Unfortunately, in some cases files in leaf directories are ‘stat’’d:
+   Unfortunately, in some cases files in leaf directories are ‘stat’'d:
 if the path specification is, say, ‘$TEXMF/fonts//pk//’, then files in a
 subdirectory ‘.../pk’, even if it is a leaf, are checked.  The reason
 cannot be explained without reference to the implementation, so read
@@ -912,7 +912,7 @@ Macs be case-insensitive some years ago, and this has exacerbated a
 problem of people creating documents that use, say, an image under the
 name ‘foo.jpg’, while the actual file is named ‘foo.JPG’ or ‘Foo.jpg’.
 It works on the Mac but if the document is transferred and run on a
-standard case-sensitive Unix (file)system, the file can’t be found, due
+standard case-sensitive Unix (file)system, the file can't be found, due
 only to differences in case.
 
    This same problematic scenario has always existed on Windows, but for
@@ -924,7 +924,7 @@ Kpathsea behavior.
 Windows, where (for practical purposes) all file names are
 case-insensitive at the kernel level, and so the normal search will
 already have definitively matched or not.  Therefore, search results in
-unusual cases can be different on Windows and Unix—but this has always
+unusual cases can be different on Windows and Unix--but this has always
 been true.
 
 
@@ -944,7 +944,7 @@ mismatches are rare to begin with, and name collisions with respect only
 to case thus even more rare, the hope is that it will not cause
 difficulties in practice.
 
-   If it’s desirable in a given situation to have the exact same search
+   If it's desirable in a given situation to have the exact same search
 behavior as previously, that can be accomplished by setting the
 configuration variable ‘texmf_casefold_search’ to ‘0’ (*note Path
 sources::).
@@ -953,7 +953,7 @@ sources::).
 
    Example #1: suppose the file ‘./foobar.tex’ exists.  Now, searching
 for ‘./FooBar.TeX’ (or any other case variation) will succeed, returning
-‘./foobar.tex’—the name as stored on disk.  In previous releases, or if
+‘./foobar.tex’--the name as stored on disk.  In previous releases, or if
 ‘texmf_casefold_search’ is false, the search would fail.
 
    Example #2: suppose we are using a case-sensitive (file)system, and
@@ -1005,7 +1005,7 @@ steps:
      tr ':' '\n' </tmp/texdirs >/tmp/texdirlist  # colons to newlines
      find `cat /tmp/texdirlist` -iname somefile.tex -print </tmp/texdirlist
 
-   Sorry that it’s annoyingly lengthy, but implementing this inside
+   Sorry that it's annoyingly lengthy, but implementing this inside
 Kpathsea would be a lot of error-prone trouble for something that is
 only useful for debugging.  If your ‘find’ does not support ‘-iname’,
 you can get GNU Find from <https://gnu.org/software/findutils>.
@@ -1020,7 +1020,7 @@ you can get GNU Find from <https://gnu.org/software/findutils>.
      system call).
 
    • Kpathsea does not do any case-insensitive matching of the
-     directories along the path.  It’s not going to find
+     directories along the path.  It's not going to find
      ‘/Some/Random/file.tex’ when looking for ‘/some/random/file.tex’.
      The casefolding only happens with the elements of the leaf
      directory.
@@ -1065,13 +1065,13 @@ several hierarchies in TeX Live).
 
    Kpathsea looks for ‘ls-R’ files along the ‘TEXMFDBS’ path.  It is
 best for this to contain all and only those hierarchies from ‘$TEXMF’
-which are specified with ‘!!’—and also to specify them with ‘!!’ in
+which are specified with ‘!!’--and also to specify them with ‘!!’ in
 ‘TEXMFDBS’.  (See the end of this section for more on ‘!!’.)
 
    The recommended way to create and maintain ‘ls-R’ is to run the
 ‘mktexlsr’ script, which is installed in ‘$(bindir)’ (‘/usr/local/bin’
 by default).  That script goes to some trouble to follow symbolic links
-as necessary, etc.  It’s also invoked by the distributed ‘mktex...’
+as necessary, etc.  It's also invoked by the distributed ‘mktex...’
 scripts.
 
    At its simplest, though, you can build ‘ls-R’ with the command
@@ -1079,7 +1079,7 @@ scripts.
 
 presuming your ‘ls’ produces the right output format (see the section
 below).  GNU ‘ls’, for example, outputs in this format.  Also presuming
-your ‘ls’ hasn’t been aliased in a system file (e.g., ‘/etc/profile’) to
+your ‘ls’ hasn't been aliased in a system file (e.g., ‘/etc/profile’) to
 something problematic, e.g., ‘ls --color=tty’.  In that case, you will
 have to disable the alias before generating ‘ls-R’.  For the precise
 definition of the file format, see *note Database format::.
@@ -1136,8 +1136,8 @@ File: kpathsea.info,  Node: Filename aliases,  Next: Database format,  Prev: ls-
 
 In some circumstances, you may wish to find a file under several names.
 For example, suppose a TeX document was created using a DOS system and
-tries to read ‘longtabl.sty’.  But now it’s being run on a Unix system,
-and the file has its original name, ‘longtable.sty’.  The file won’t be
+tries to read ‘longtabl.sty’.  But now it's being run on a Unix system,
+and the file has its original name, ‘longtable.sty’.  The file won't be
 found.  You need to give the actual file ‘longtable.sty’ an alias
 ‘longtabl.sty’.
 
@@ -1162,22 +1162,22 @@ File: kpathsea.info,  Node: Database format,  Prev: Filename aliases,  Up: Filen
 5.5.3 Database format
 ---------------------
 
-The “database” read by Kpathsea is a line-oriented file of plain text.
+The "database" read by Kpathsea is a line-oriented file of plain text.
 The format is that generated by GNU (and most other) ‘ls’ programs given
 the ‘-R’ option, as follows.
 
    • Blank lines are ignored.
 
    • If a line begins with ‘/’ or ‘./’ or ‘../’ and ends with a colon,
-     it’s the name of a directory.  (‘../’ lines aren’t useful, however,
+     it's the name of a directory.  (‘../’ lines aren't useful, however,
      and should not be generated.)
 
    • All other lines define entries in the most recently seen directory.
-     /’s in such lines will produce possibly-strange results.
+     /'s in such lines will produce possibly-strange results.
 
    • Files with no preceding directory line are ignored.
 
-   For example, here’s the first few lines of ‘ls-R’ (which totals about
+   For example, here's the first few lines of ‘ls-R’ (which totals about
 30K bytes) on my system:
 
      bibtex
@@ -1290,7 +1290,7 @@ filename, and returns the first file found.
      to find them.  For example, ‘cont-en.fmt’ typically exists for both
      ‘pdftex’ and ‘xetex’.  With the default path settings, you can use
      ‘--engine=/’ to look for any dump file, regardless of engine; if a
-     dump file exists for more than one engine, it’s indeterminate which
+     dump file exists for more than one engine, it's indeterminate which
      one is returned.  (The ‘/’ ends up specifying a normal recursive
      search along the path where the dumps are stored, namely
      ‘$TEXMF/web2c{/$engine,}’.)
@@ -1306,7 +1306,7 @@ filename, and returns the first file found.
      configuration files you can use ‘--format="dvips config"’.  (The
      quotes are for the sake of the shell.)
 
-     Here’s the current list of recognized names and the associated
+     Here's the current list of recognized names and the associated
      suffixes.  *Note Supported file formats::, for more information on
      each of these.
 
@@ -1450,7 +1450,7 @@ filename, and returns the first file found.
           /another/place/foo.sty
 
      Because of the above rules, the presence of a leading ‘/’ is
-     important, since it “anchors” the match to a full component name:
+     important, since it "anchors" the match to a full component name:
 
           kpsewhich --subdir=/lace foo.sty
           ⇒
@@ -1469,7 +1469,7 @@ filename, and returns the first file found.
      one you are interested in.
 
      We only match at the end because a site might happen to install TeX
-     in ‘/some/coincidental/pkg1/path/’, and we wouldn’t want to match
+     in ‘/some/coincidental/pkg1/path/’, and we wouldn't want to match
      ‘texmf-dist/scripts/pkg2/’ that when searching for ‘/pkg1’.
 
 
@@ -1479,10 +1479,10 @@ File: kpathsea.info,  Node: Specially-recognized files,  Next: Auxiliary tasks, 
 ------------------------------------------------
 
 ‘kpsewhich’ recognizes a few special filenames on the command line and
-defaults to using the ‘known’ file formats for them, merely to save the
+defaults to using the 'known' file formats for them, merely to save the
 time and trouble of specifying the format.  This is only a feature of
 ‘kpsewhich’; when using the Kpathsea library itself, none of these
-special filenames are recognized, and it’s still up to the caller to
+special filenames are recognized, and it's still up to the caller to
 specify the desired format.
 
    Here is the list of special filenames to ‘kpsewhich’, along with
@@ -1518,7 +1518,7 @@ their corresponding format:
 
    A user-specified format will override the above defaults.
 
-   Another reference for information about TeX’s many special files is
+   Another reference for information about TeX's many special files is
 ‘tcfmgr.map’, found in ‘texmf/texconfig/tcfmgr.map’, which records
 various information about the above configuration files (among others).
 
@@ -1596,7 +1596,7 @@ Kpsewhich provides some features in addition to path lookup as such:
 
      Example: ‘FOO='.;~' kpsewhich --var-brace-value=FOO’ outputs (on a
      Unix-ish system) ‘.:/home/karl’, supposing the latter is the
-     current user’s home directory.  Note that the ‘;’ in the source
+     current user's home directory.  Note that the ‘;’ in the source
      value, as commonly used in ‘texmf.cnf’, has changed to a ‘:’, as
      the normal path separator on the current system.  On a Windows-ish
      system, the ‘;’ would remain.
@@ -1650,7 +1650,7 @@ particularly).
 
    Kpathsea provides a standard way to search for files of any of the
 supported file types; glyph fonts are a bit different than all the rest.
-Searches are based solely on names of files, not their contents—if a GF
+Searches are based solely on names of files, not their contents--if a GF
 file is (mis)named ‘cmr10.600pk’, it will be found as a PK file.
 
 * Menu:
@@ -1782,7 +1782,7 @@ Auxiliary tasks::).
      suffix ‘.mft’.
 
 ‘misc fonts’
-     (font-related files that don’t fit the other categories)
+     (font-related files that don't fit the other categories)
      ‘MISCFONTS’
 
 ‘mlbib’
@@ -1907,7 +1907,7 @@ the following table.
      (binary files used by ‘foo’) ‘FOOINPUTS’.
 
    If an environment variable by these names are set, the corresponding
-‘texmf.cnf’ definition won’t be looked at (unless, as usual, the
+‘texmf.cnf’ definition won't be looked at (unless, as usual, the
 environment variable value has an extra ‘:’).  *Note Default
 expansion::.
 
@@ -1946,8 +1946,8 @@ searches are the exception, as described in the next section).
   3. If the file format defines a program to invoke to create missing
      files, run it (*note mktex scripts::).
 
-   The order in which we search for “suffixed” name (item 1) or the
-“as-is” name (item 2) is controlled by the ‘try_std_extension_first’
+   The order in which we search for "suffixed" name (item 1) or the
+"as-is" name (item 2) is controlled by the ‘try_std_extension_first’
 configuration value.  The default set in ‘texmf.cnf’ is true, since
 common suffixes are already recognized: ‘babel.sty’ will only look for
 ‘babel.sty’, not ‘babel.sty.tex’, regardless of this setting.
@@ -2014,7 +2014,7 @@ file first, then a GF file.
 filesystems (such as DOS) that permit only three-character extensions.
 
    If that fails, Kpathsea looks for a font with a close-enough DPI.
-“Close enough” is defined by the macro ‘KPSE_BITMAP_TOLERANCE’ in
+"Close enough" is defined by the macro ‘KPSE_BITMAP_TOLERANCE’ in
 ‘kpathsea/tex-glyph.h’ to be ‘DPI / 500 + 1’.  This is slightly more
 than the 0.2% minimum allowed by the DVI standard
 (<CTAN:/dviware/driv-standard/level-0>).
@@ -2039,7 +2039,7 @@ found are read; earlier definitions override later ones.
      instead of ‘ptmr’, you can (you get ‘ptmr8r’).
 
   2. A few fonts have historically had multiple names: specifically,
-     LaTeX’s “circle font” has variously been known as ‘circle10’,
+     LaTeX's "circle font" has variously been known as ‘circle10’,
      ‘lcircle10’, and ‘lcirc10’.  Aliases can make all the names
      equivalent, so that it no longer matters what the name of the
      installed file is; TeX documents will find their favorite name.
@@ -2130,7 +2130,7 @@ possibilities:
      DVI or VF file tries to typeset.
 
 ‘none’
-     Don’t suppress any warnings.
+     Don't suppress any warnings.
 
 ‘readable’
      Suppress warnings about attempts to access a file whose permissions
@@ -2154,7 +2154,7 @@ configured by default to invoke an external program to create it
 dynamically (*note mktex configuration::).  These are collectively known
 as “‘mktex’ scripts”, since most of them are named ‘mktex...’.
 
-   For example, this is useful for fonts (bitmaps, TFM’s, and
+   For example, this is useful for fonts (bitmaps, TFM's, and
 arbitrarily-sizable Metafont sources such as the Sauter and EC fonts),
 since any given document can use fonts never before referenced.
 Building all fonts in advance is therefore impractical, if not
@@ -2210,7 +2210,7 @@ for instance, which defines the default mode, resolution, some special
 directory names, etc.  If you prefer not to change the distributed
 scripts, you can simply create ‘mktex.cnf’ with the appropriate
 definitions (you do not need to create it if you have nothing to put in
-it).  ‘mktex.cnf’ has no special syntax; it’s an arbitrary Bourne shell
+it).  ‘mktex.cnf’ has no special syntax; it's an arbitrary Bourne shell
 script.  The distribution contains a sample ‘mktex.cnf’ for you to copy
 and modify as you please (it is not installed anywhere).
 
@@ -2226,10 +2226,10 @@ and modify as you please (it is not installed anywhere).
 
    If none of the options below are enabled, ‘mktexpk’, ‘mktextfm’, and
 ‘mktexmf’ follow the following procedure to decide where fonts should be
-installed.  Find the tree where the font’s sources are, and test the
+installed.  Find the tree where the font's sources are, and test the
 permissions of the ‘fonts’ directory of that tree to determine whether
 it is writable.  If it is, put the files in the tree in appropriate
-locations.  If it isn’t writable, see whether the tree is a system tree
+locations.  If it isn't writable, see whether the tree is a system tree
 (named in ‘SYSTEXMF’).  If so, the ‘VARTEXFONTS’ tree is used.  In all
 other cases the working directory is used.
 
@@ -2239,7 +2239,7 @@ other cases the working directory is used.
      Tell ‘mktexdir’ to create directories append-only, i.e., set their
      sticky bit (*note (coreutils)Mode Structure::).  This feature is
      silently ignored on non-Unix platforms (e.g.  Windows/NT and
-     MS-DOS) which don’t support similar functionality.  This feature is
+     MS-DOS) which don't support similar functionality.  This feature is
      enabled by default.
 
 ‘dosnames’
@@ -2248,18 +2248,18 @@ other cases the working directory is used.
      clash with other TeX-related filenames; ‘mktex’ scripts do nothing
      about filenames which exceed the 8+3 MS-DOS limits but remain
      unique when truncated (by the OS) to these limits, and nether do
-     the scripts care about possible clashes with files which aren’t
+     the scripts care about possible clashes with files which aren't
      related with TeX. For example, ‘cmr10.600pk’ would clash with
      ‘cmr10.600gf’ and is therefore changed when ‘dosnames’ is in
-     effect, but ‘mf.pool’ and ‘mp.base’ don’t clash with any
+     effect, but ‘mf.pool’ and ‘mp.base’ don't clash with any
      TeX-related files and are therefore unchanged.
 
      This feature is turned on by default on MS-DOS. If you do not wish
      ‘dosnames’ to be set on an MS-DOS platform, you need to set the
-     ‘MT_FEATURES’ environment variable to a value that doesn’t include
+     ‘MT_FEATURES’ environment variable to a value that doesn't include
      ‘dosnames’.  You can also change the default setting by editing
      ‘mktex.opt’, but only if you use the ‘mktex’ shell scripts; the
-     emulation programs don’t consult ‘mktex.opt’.
+     emulation programs don't consult ‘mktex.opt’.
 
 ‘fontmaps’
      Instead of deriving the location of a font in the destination tree
@@ -2347,7 +2347,7 @@ program; for example, ‘DVIPSMAKEPK’ for Dvipsk.
 problem, you can then execute the log file to create the missing files.
 
    If the environment variable ‘TEXMF_OUTPUT_DIRECTORY’ is set,
-‘missfont.log’ is first tried to be written there; if it’s not set, the
+‘missfont.log’ is first tried to be written there; if it's not set, the
 current directory is tried first.  If that first write fails and the
 environment variable or configuration file value ‘TEXMFOUTPUT’ is set,
 we try to write ‘missfont.log’ there.  Otherwise nothing is written.
@@ -2372,10 +2372,10 @@ also be passed:
 ‘--mfmode NAME’
      Sets the Metafont mode to NAME.
 ‘--bdpi NUM’
-     Sets the “base dpi” for the font.  This must match the mode being
+     Sets the "base dpi" for the font.  This must match the mode being
      used.
 ‘--mag STRING’
-     A “magstep” string suitable for the Metafont ‘mag’ variable.  This
+     A "magstep" string suitable for the Metafont ‘mag’ variable.  This
      must match the combination of BDPI and DPI being used.
 ‘--destdir STRING’
      A directory name.  If the directory is absolute, it is used as-is.
@@ -2446,7 +2446,7 @@ file types: ‘tex-file.[ch]’ must be modified to do this.  For example,
 Kpathsea has support for looking up Dvips config files, even though no
 program other than Dvips is likely to ever want to do so.  I felt this
 was acceptable, since along with new file types should also come new
-defaults in ‘texmf.cnf’ (and its descendant ‘paths.h’), since it’s
+defaults in ‘texmf.cnf’ (and its descendant ‘paths.h’), since it's
 simplest for users if they can modify one configuration file for all
 kinds of paths.
 
@@ -2494,12 +2494,12 @@ this:
      anywhere.  You can use ‘kpsewhich --expand-var=\$SELFAUTOLOC’,
      etc., to see the values.
 
-  3. Set debugging options.  *Note Debugging::.  If your program doesn’t
+  3. Set debugging options.  *Note Debugging::.  If your program doesn't
      have a debugging option already, you can define one and set
      ‘kpse->debug’ to the number that the user supplies (as in Dviljk
      and Web2c), or you can just omit this altogether (users can always
      set the ‘KPATHSEA_DEBUG’ environment variable).  If you do have
-     runtime debugging already, you need to merge Kpathsea’s options
+     runtime debugging already, you need to merge Kpathsea's options
      with yours (as in Dvipsk and Xdvik).
 
   4. If your program has its own configuration files that can define
@@ -2508,7 +2508,7 @@ this:
      (This array is indexed by file type; see ‘tex-file.h’.)  See
      ‘resident.c’ in Dvipsk for an example.
 
-  5. Call ‘kpathsea_init_prog’ (see ‘proginit.c’).  It’s useful for the
+  5. Call ‘kpathsea_init_prog’ (see ‘proginit.c’).  It's useful for the
      DVI drivers, at least, but for other programs it may be simpler to
      extract the parts of it that actually apply.  This does not
      initialize any paths, it just looks for (and sets) certain
@@ -2521,7 +2521,7 @@ this:
   6. The routine to actually find a file of type FORMAT is
      ‘kpathsea_find_file’.  You can call ‘kpathsea_find_file’ after
      doing only the first and second of the initialization steps
-     above—Kpathsea automatically reads the ‘texmf.cnf’ generic config
+     above--Kpathsea automatically reads the ‘texmf.cnf’ generic config
      files, looks for environment variables, and does expansions at the
      first lookup.
 
@@ -2540,7 +2540,7 @@ this:
      *’.  It always assumes the file must exist, and thus will search
      the disk if necessary (unless the search path specified ‘!!’,
      etc.).  In other words, if you are looking up a VF or some other
-     file that need not exist, don’t use this.
+     file that need not exist, don't use this.
 
   10. To close the Kpathsea library instance you are using, call
      ‘kpathsea_finish’.  This function closes any open log files and
@@ -2571,12 +2571,12 @@ system.
 to potentially dangerous files is a configuration variable
 ‘openout_any’.  It specifies one of three levels:
 
-   • When set to ‘a’ (for “any”), no restrictions are imposed.
+   • When set to ‘a’ (for "any"), no restrictions are imposed.
 
-   • When is set to ‘r’ (for “restricted”), filenames beginning with ‘.’
+   • When is set to ‘r’ (for "restricted"), filenames beginning with ‘.’
      are disallowed (except ‘.tex’, because LaTeX needs it).
 
-   • When set to ‘p’ (for “paranoid”), additional restrictions are
+   • When set to ‘p’ (for "paranoid"), additional restrictions are
      imposed.
 
        1. First, an absolute filename must refer to a file in (or in a
@@ -2584,7 +2584,7 @@ to potentially dangerous files is a configuration variable
           environment variable or the ‘TEXMFOUTPUT’ environment variable
           or configuration file setting.
 
-       2. LuaTeX uses a so-called “extended” mode, in which the values
+       2. LuaTeX uses a so-called "extended" mode, in which the values
           of ‘TEXMFVAR’ and ‘TEXMFSYSVAR’ are also checked for absolute
           filenames.  This is done because, in practice, fundamental
           parts of the LuaLaTeX system (notably ‘luaotfload’) need a
@@ -2603,7 +2603,7 @@ another.  *Note (web2c)Shell escapes::.
 if the final result is an acceptable directory; they are simply
 forbidden.  That is, Kpathsea merely considers the value as a string,
 not looking on the filesystem at all.  (However, if another program
-wants to do such resolutions and check the result, that’s ok.)
+wants to do such resolutions and check the result, that's ok.)
 
    For backwards compatibility, ‘y’ and ‘1’ are synonyms of ‘a’, while
 ‘n’ and ‘0’ are synonyms for ‘r’.
@@ -2613,7 +2613,7 @@ argument, returns ‘true’ if that filename is acceptable to be opened for
 output or ‘false’ otherwise.  The Kpsewhich program has an option
 (‘--safe-out-name’) providing a command line interface for the check.
 
-   For LuaTeX’s extended mode, the function is
+   For LuaTeX's extended mode, the function is
 ‘kpathsea_out_name_ok_extended’, and the Kpsewhich option is
 ‘--safe-extended-out-name’.
 
@@ -2638,10 +2638,10 @@ Thus:
    Furthermore, there are ‘kpse_...’ versions of all the above functions
 (as usual), with the default library instance implicitly passed as the
 first argument.  LuaTeX provides both ‘kpse.*’ and ‘kpathsea.*’
-bindings, so it’s good to always have both.
+bindings, so it's good to always have both.
 
    Sorry for the combinatorial explosion, but we hope no further options
-will ever be needed.  If so, we’ll likely provide a more generic
+will ever be needed.  If so, we'll likely provide a more generic
 interface as well as the above.
 
 
@@ -2687,7 +2687,7 @@ will be the value found or ‘NULL’.  This function is declared in
    The routine to do full variable and tilde expansion of an arbitrary
 string in the context of a search path (as opposed to simply retrieving
 a value) is ‘kpathsea_var_expand’, also declared in
-‘kpathsea/variable.h’.  However, it’s generally only necessary to set
+‘kpathsea/variable.h’.  However, it's generally only necessary to set
 the search path structure components as explained in the previous
 section instead of using this directly.  Because of its usage with any
 input string, undefined ‘$FOO’ constructs in the argument to
@@ -2728,7 +2728,7 @@ File: kpathsea.info,  Node: Bug checklist,  Next: Mailing lists,  Up: Reporting 
 8.1 Bug checklist
 =================
 
-Before reporting a bug, please check below to be sure it isn’t already
+Before reporting a bug, please check below to be sure it isn't already
 known (*note Common problems::).
 
    Bug reports should be sent via electronic mail to <tex-k@tug.org>.
@@ -2749,7 +2749,7 @@ investigation, your report should include the following:
    • Any options you gave to ‘configure’.  This is recorded in the
      ‘config.status’ files.
 
-     If you are reporting a bug in ‘configure’ itself, it’s probably
+     If you are reporting a bug in ‘configure’ itself, it's probably
      system-dependent, and it will be unlikely the maintainers can do
      anything useful if you merely report that thus-and-such is broken.
      Therefore, you need to do some additional work: for some bugs, you
@@ -2765,13 +2765,13 @@ investigation, your report should include the following:
      You can get this by setting the environment variable
      ‘KPATHSEA_DEBUG’ to ‘-1’ before running the program.  Please look
      at the log yourself to make sure the behavior is really a bug
-     before reporting it; perhaps “old” environment variable settings
+     before reporting it; perhaps "old" environment variable settings
      are causing files not to be found, for example.
 
    • The contents of any input files necessary to reproduce the bug.
      For bugs in DVI-reading programs, for example, this generally means
-     a DVI file (and any EPS or other files it uses)—TeX source files
-     are helpful, but the DVI file is required, because that’s the
+     a DVI file (and any EPS or other files it uses)--TeX source files
+     are helpful, but the DVI file is required, because that's the
      actual program input.
 
    • If you are sending a patch (do so if you can!), please do so in the
@@ -2820,13 +2820,13 @@ File: kpathsea.info,  Node: Debugging,  Next: Logging,  Prev: Mailing lists,  Up
 
 Kpathsea provides a number of runtime debugging options, detailed below
 by their names and corresponding numeric values.  When the files you
-expect aren’t being found, the thing to do is enable these options and
+expect aren't being found, the thing to do is enable these options and
 examine the output.
 
    You can set these with some runtime argument (e.g., ‘-d’) to the
 program; in that case, you should use the numeric values described in
-the program’s documentation (which, for Dvipsk and Xdvik, are different
-than those below).  It’s best to give the ‘-d’ (or whatever) option
+the program's documentation (which, for Dvipsk and Xdvik, are different
+than those below).  It's best to give the ‘-d’ (or whatever) option
 first, for maximal output.  Dvipsk and Xdvik have additional
 program-specific debugging options as well.
 
@@ -2847,7 +2847,7 @@ it easily.  For example, in Bourne-compatible shells:
 (*note Invoking kpsewhich::), instead of the original program.
 
    In any case, you cannot use the names below; you must always use
-somebody’s numbers.  (Sorry.)  To set more than one option, just sum the
+somebody's numbers.  (Sorry.)  To set more than one option, just sum the
 corresponding numbers.
 
 ‘KPSE_DEBUG_STAT (1)’
@@ -2867,7 +2867,7 @@ corresponding numbers.
 
 ‘KPSE_DEBUG_FOPEN (4)’
      Report file openings and closings.  Especially useful when your
-     system’s file table is full, for seeing which files have been
+     system's file table is full, for seeing which files have been
      opened but never closed.  In case you want to set breakpoints in a
      debugger: this works by redefining ‘fopen’ (‘fclose’) to be
      ‘kpse_fopen_trace’ (‘kpse_fclose_trace’).
@@ -2875,15 +2875,15 @@ corresponding numbers.
 ‘KPSE_DEBUG_PATHS (8)’
      Report general path information for each file type Kpathsea is
      asked to search.  This is useful when you are trying to track down
-     how a particular path got defined—from ‘texmf.cnf’, ‘config.ps’, an
-     environment variable, the compile-time default, etc.  This is the
-     contents of the ‘kpse_format_info_type’ structure defined in
+     how a particular path got defined--from ‘texmf.cnf’, ‘config.ps’,
+     an environment variable, the compile-time default, etc.  This is
+     the contents of the ‘kpse_format_info_type’ structure defined in
      ‘tex-file.h’.
 
 ‘KPSE_DEBUG_EXPAND (16)’
      Report the directory list corresponding to each path element
      Kpathsea searches.  This is only relevant when Kpathsea searches
-     the disk, since ‘ls-R’ searches don’t look through directory lists
+     the disk, since ‘ls-R’ searches don't look through directory lists
      in this way.
 
 ‘KPSE_DEBUG_SEARCH (32)’
@@ -2935,12 +2935,12 @@ your filesystem is full, or in discovering usage patterns at your site.
 
    To do this, define the environment or config file variable
 ‘TEXMFLOG’.  The value is the name of the file to append the information
-to.  The file is created if it doesn’t exist, and appended to if it
+to.  The file is created if it doesn't exist, and appended to if it
 does.
 
    Each successful search turns into one line in the log file: two words
 separated by a space.  The first word is the time of the search, as the
-integer number of seconds since “the epoch”, i.e., UTC midnight 1
+integer number of seconds since "the epoch", i.e., UTC midnight 1
 January 1970 (more precisely, the result of the ‘time’ system call).
 The second word is the filename.
 
@@ -2977,7 +2977,7 @@ execution, ...
 
 * Menu:
 
-* Unable to find files::        If your program can’t find fonts (or whatever).
+* Unable to find files::        If your program can't find fonts (or whatever).
 * Slow path searching::         If it takes forever to find anything.
 * Unable to generate fonts::    If mktexpk fails.
 * TeX or Metafont failing::     Likely compiler bugs.
@@ -2992,12 +2992,12 @@ If a program complains it cannot find fonts (or other input files), any
 of several things might be wrong.  In any case, you may find the
 debugging options helpful.  *Note Debugging::.
 
-   • Perhaps you simply haven’t installed all the necessary files; the
+   • Perhaps you simply haven't installed all the necessary files; the
      basic fonts and input files are distributed separately from the
      programs.  *Note unixtex.ftp::.
 
    • You have (perhaps unknowingly) told Kpathsea to use search paths
-     that don’t reflect where the files actually are.  One common cause
+     that don't reflect where the files actually are.  One common cause
      is having environment variables set from a previous installation,
      thus overriding what you carefully set in ‘texmf.cnf’ (*note
      Supported file formats::).  System ‘/etc/profile’ or other files
@@ -3006,7 +3006,7 @@ debugging options helpful.  *Note Debugging::.
    • Your files reside in a directory that is only pointed to via a
      symbolic link, in a leaf directory and is not listed in ‘ls-R’.
 
-     Unfortunately, Kpathsea’s subdirectory searching has an
+     Unfortunately, Kpathsea's subdirectory searching has an
      irremediable deficiency: If a directory D being searched for
      subdirectories contains plain files and symbolic links to other
      directories, but no true subdirectories, D will be considered a
@@ -3020,12 +3020,12 @@ debugging options helpful.  *Note Debugging::.
      The directory immediately followed by the ‘//’ in the path
      specification, however, is always searched for subdirectories, even
      if it is a leaf.  Presumably you would not have asked for the
-     directory to be searched for subdirectories if you didn’t want it
+     directory to be searched for subdirectories if you didn't want it
      to be.
 
-   • If the fonts (or whatever) don’t already exist, ‘mktexpk’ (or
+   • If the fonts (or whatever) don't already exist, ‘mktexpk’ (or
      ‘mktexmf’ or ‘mktextfm’) will try to create them.  If these rather
-     complicated shell scripts fail, you’ll eventually get an error
+     complicated shell scripts fail, you'll eventually get an error
      message saying something like ‘Can't find font FONTNAME’.  The best
      solution is to fix (or at least report) the bug in ‘mktexpk’; the
      workaround is to generate the necessary fonts by hand with
@@ -3047,7 +3047,7 @@ culprits:
      takes a noticeable time.  The solution is to create and maintain a
      separate ‘ls-R’ file that lists all the files in your main TeX
      hierarchy.  *Note Filename database::.  Kpathsea always uses ‘ls-R’
-     if it’s present; there’s no need to recompile or reconfigure any of
+     if it's present; there's no need to recompile or reconfigure any of
      the programs.
 
    • Your recursively-searched directories (e.g.,
@@ -3056,7 +3056,7 @@ culprits:
      optimization (*note Subdirectory expansion::).
 
      It is best to have only directories (and perhaps a ‘README’) in the
-     upper levels of the directory structure, and it’s very important to
+     upper levels of the directory structure, and it's very important to
      have _only_ files, and no subdirectories, in the leaf directories
      where the dozens of TFM, PK, or whatever files reside.
 
@@ -3094,7 +3094,7 @@ configuration file:
      M lqmed
 
    If Metafont runs, but generates fonts at the wrong resolution or for
-the wrong device, most likely ‘mktexpk’’s built-in guess for the mode is
+the wrong device, most likely ‘mktexpk’'s built-in guess for the mode is
 wrong, and you should override it as above.
 
    See <https://ctan.org/pkg/modes> for a list of resolutions and mode
@@ -3103,7 +3103,7 @@ names for most devices (additional submissions are welcome).
    If Metafont runs but generates fonts at a resolution of 2602dpi (and
 prints out the name of each character as well as just a character
 number, and maybe tries to display the characters), then your Metafont
-base file probably hasn’t been made properly.  (It’s using the default
+base file probably hasn't been made properly.  (It's using the default
 ‘proof’ mode, instead of an actual device mode.)  To make a proper
 ‘plain.base’, assuming the local mode definitions are contained in a
 file ‘modes.mf’, run the following command (assuming Unix):
@@ -3130,9 +3130,9 @@ running a normal input file, the problem is usually a compiler bug
 passed, problems may lurk.  Optimization occasionally causes trouble in
 programs other than TeX and Metafont themselves, too.
 
-   For a workaround, if you enabled any optimization flags, it’s best to
+   For a workaround, if you enabled any optimization flags, it's best to
 omit optimization entirely.  In any case, the way to find the facts is
-to run the program under the debugger and see where it’s failing.
+to run the program under the debugger and see where it's failing.
 
    Also, if you have trouble with a system C compiler, I advise trying
 the GNU C compiler.  And vice versa, unfortunately; but in that case I
@@ -3142,7 +3142,7 @@ also recommend reporting a bug to the GCC mailing list; see *note
    To report compiler bugs effectively requires perseverance and
 perspicacity: you must find the miscompiled line, and that usually
 involves delving backwards in time from the point of error, checking
-through TeX’s (or whatever program’s) data structures.  Good luck.
+through TeX's (or whatever program's) data structures.  Good luck.
 
 
 File: kpathsea.info,  Node: Index,  Prev: Reporting bugs,  Up: Top
@@ -3153,11 +3153,6 @@ Index
  [index ]
 * Menu:
 
-* !! and casefolding:                    Casefolding examples.
-                                                              (line  57)
-* !! in path specifications:             ls-R.                (line  57)
-* !! in TEXMFDBS:                        ls-R.                (line  11)
-* $ expansion:                           Variable expansion.  (line   6)
 * --all:                                 Path searching options.
                                                               (line  12)
 * --casefold-search:                     Path searching options.
@@ -3218,6 +3213,13 @@ Index
 * -iname, find predicate:                Casefolding examples.
                                                               (line  78)
 * -L option to ls:                       ls-R.                (line  44)
+* ; translated to : in texmf.cnf:        Config files.        (line  66)
+* : may not be ::                        Searching overview.  (line  13)
+* :: expansion:                          Default expansion.   (line   6)
+* !! and casefolding:                    Casefolding examples.
+                                                              (line  57)
+* !! in path specifications:             ls-R.                (line  57)
+* !! in TEXMFDBS:                        ls-R.                (line  11)
 * . directories, ignored:                ls-R.                (line  39)
 * . files:                               ls-R.                (line  39)
 * .2602gf:                               Unable to generate fonts.
@@ -3333,6 +3335,7 @@ Index
                                                               (line  53)
 * .web <1>:                              Supported file formats.
                                                               (line 227)
+* { expansion:                           Brace expansion.     (line   6)
 * / may not be /:                        Searching overview.  (line  13)
 * /, trailing in home directory:         Tilde expansion.     (line  19)
 * //:                                    Subdirectory expansion.
@@ -3341,20 +3344,17 @@ Index
                                                               (line  14)
 * /etc/profile and aliases:              ls-R.                (line  25)
 * /var/tmp/texfonts:                     mktex configuration. (line 113)
-* 2602gf:                                Unable to generate fonts.
-                                                              (line  36)
-* 8.3 filenames, using:                  mktex configuration. (line  68)
-* : may not be ::                        Searching overview.  (line  13)
-* :: expansion:                          Default expansion.   (line   6)
-* ; translated to : in texmf.cnf:        Config files.        (line  66)
-* = omitted in texmf.cnf and misparsing: Config files.        (line  86)
 * \, line continuation in texmf.cnf:     Config files.        (line  37)
 * \openin:                               Searching overview.  (line  31)
 * \openout:                              Security.            (line  16)
 * \special, suppressing warnings about:  Suppressing warnings.
                                                               (line  31)
-* { expansion:                           Brace expansion.     (line   6)
+* = omitted in texmf.cnf and misparsing: Config files.        (line  86)
 * ~ expansion:                           Tilde expansion.     (line   6)
+* $ expansion:                           Variable expansion.  (line   6)
+* 2602gf:                                Unable to generate fonts.
+                                                              (line  36)
+* 8.3 filenames, using:                  mktex configuration. (line  68)
 * absolute filenames:                    Searching overview.  (line  58)
 * access system call:                    Casefolding examples.
                                                               (line  86)
@@ -3633,8 +3633,6 @@ Index
 * Knuth, Donald E.:                      History.             (line   6)
 * Knuth, Donald E., archive of programs by: unixtex.ftp.      (line  20)
 * Kpathsea config file, source for path: Path sources.        (line  20)
-* kpathsea.h:                            Programming overview.
-                                                              (line  26)
 * kpathsea_cnf_get:                      Programming with config files.
                                                               (line  27)
 * KPATHSEA_DEBUG:                        Calling sequence.    (line  28)
@@ -3644,12 +3642,12 @@ Index
 * kpathsea_find_glyph:                   Glyph lookup.        (line  26)
 * kpathsea_find_glyph <1>:               Calling sequence.    (line  70)
 * kpathsea_finish:                       Calling sequence.    (line  87)
-* kpathsea_init_prog:                    Fallback font.       (line  15)
-* kpathsea_init_prog <1>:                Calling sequence.    (line  53)
 * kpathsea_in_name_ok:                   Safe filenames.      (line  59)
 * kpathsea_in_name_ok_extended:          Safe filenames.      (line  59)
 * kpathsea_in_name_ok_silent:            Safe filenames.      (line  72)
 * kpathsea_in_name_ok_silent_extended:   Safe filenames.      (line  72)
+* kpathsea_init_prog:                    Fallback font.       (line  15)
+* kpathsea_init_prog <1>:                Calling sequence.    (line  53)
 * kpathsea_new:                          Calling sequence.    (line   9)
 * kpathsea_open_file:                    Calling sequence.    (line  79)
 * kpathsea_out_name_ok:                  Safe filenames.      (line  50)
@@ -3660,16 +3658,9 @@ Index
 * kpathsea_var_value:                    Programming with config files.
                                                               (line  10)
 * KPATHSEA_WARNING:                      Config files.        (line  18)
+* kpathsea.h:                            Programming overview.
+                                                              (line  26)
 * kpse mode of LuaTeX:                   Security.            (line  32)
-* kpse->debug:                           Debugging.           (line   6)
-* kpse->debug <1>:                       Debugging.           (line  18)
-* kpse->debug variable:                  Calling sequence.    (line  39)
-* kpse->format_info:                     Calling sequence.    (line  47)
-* kpse->invocation_name:                 Calling sequence.    (line  22)
-* kpse->invocation_short_name:           Calling sequence.    (line  22)
-* kpse->program_name:                    Calling sequence.    (line  22)
-* kpsewhich:                             Invoking kpsewhich.  (line   6)
-* Kpsewhich, and debugging:              Debugging.           (line  31)
 * KPSE_BITMAP_TOLERANCE:                 Basic glyph lookup.  (line  15)
 * KPSE_DEBUG_EXPAND (16):                Debugging.           (line  68)
 * KPSE_DEBUG_FOPEN (4):                  Debugging.           (line  53)
@@ -3680,6 +3671,15 @@ Index
 * KPSE_DEBUG_VARS (64):                  Debugging.           (line  83)
 * KPSE_DOT expansion:                    KPSE_DOT expansion.  (line   6)
 * kpse_format_info_type:                 Debugging.           (line  61)
+* kpse->debug:                           Debugging.           (line   6)
+* kpse->debug <1>:                       Debugging.           (line  18)
+* kpse->debug variable:                  Calling sequence.    (line  39)
+* kpse->format_info:                     Calling sequence.    (line  47)
+* kpse->invocation_name:                 Calling sequence.    (line  22)
+* kpse->invocation_short_name:           Calling sequence.    (line  22)
+* kpse->program_name:                    Calling sequence.    (line  22)
+* kpsewhich:                             Invoking kpsewhich.  (line   6)
+* Kpsewhich, and debugging:              Debugging.           (line  31)
 * last-resort font:                      Fallback font.       (line   6)
 * lcircle10:                             Fontmap.             (line  19)
 * leading colons:                        Default expansion.   (line   6)
@@ -3738,8 +3738,8 @@ Index
                                                               (line 121)
 * mismatched checksum warnings:          Suppressing warnings.
                                                               (line  17)
-* missfont.log:                          mktex script names.  (line  35)
 * MISSFONT_LOG:                          mktex script names.  (line  45)
+* missfont.log:                          mktex script names.  (line  35)
 * missing character warnings:            Suppressing warnings.
                                                               (line  20)
 * mkocp:                                 mktex script names.  (line  18)
@@ -3756,7 +3756,7 @@ Index
 * mktexfmt:                              mktex script names.  (line  10)
 * mktexmf:                               mktex script names.  (line  15)
 * mktexpk:                               mktex script names.  (line  24)
-* mktexpk can’t guess mode:              Unable to generate fonts.
+* mktexpk can't guess mode:              Unable to generate fonts.
                                                               (line  12)
 * mktextex:                              mktex script names.  (line  27)
 * mktextfm:                              mktex script names.  (line  30)
@@ -3907,6 +3907,10 @@ Index
 * sources for search paths:              Path sources.        (line   6)
 * special:                               Suppressing warnings.
                                                               (line  30)
+* st_nlink:                              Subdirectory expansion.
+                                                              (line  26)
+* ST_NLINK_TRICK:                        Subdirectory expansion.
+                                                              (line  38)
 * stack trace:                           Bug checklist.       (line  58)
 * standalone path searching:             Invoking kpsewhich.  (line   6)
 * standard error and debugging output:   Debugging.           (line  27)
@@ -3916,10 +3920,6 @@ Index
 * strip:                                 mktex configuration. (line 107)
 * stripsupplier:                         mktex configuration. (line 101)
 * striptypeface:                         mktex configuration. (line 104)
-* st_nlink:                              Subdirectory expansion.
-                                                              (line  26)
-* ST_NLINK_TRICK:                        Subdirectory expansion.
-                                                              (line  38)
 * subdirectory searching:                Subdirectory expansion.
                                                               (line   6)
 * suffixes, filename:                    File lookup.         (line  24)
@@ -3959,6 +3959,9 @@ Index
 * TeX glyph lookup:                      Glyph lookup.        (line   6)
 * TeX support:                           TeX support.         (line   6)
 * TeX Users Group:                       Introduction.        (line  42)
+* TEX_HUSH:                              Searching overview.  (line  63)
+* TEX_HUSH <1>:                          Suppressing warnings.
+                                                              (line   6)
 * tex-file.c:                            File lookup.         (line  37)
 * tex-file.h:                            Programming overview.
                                                               (line  26)
@@ -3997,6 +4000,11 @@ Index
                                                               (line 184)
 * TEXMF:                                 TeX directory structure.
                                                               (line   6)
+* texmf_casefold_search:                 Casefolding search.  (line  12)
+* TEXMF_OUTPUT_DIRECTORY, and missfont.log: mktex script names.
+                                                              (line  39)
+* TEXMF_OUTPUT_DIRECTORY, and paranoid output files: Safe filenames.
+                                                              (line  21)
 * texmf.cnf:                             Specially-recognized files.
                                                               (line  38)
 * texmf.cnf missing, warning about:      Config files.        (line  18)
@@ -4024,11 +4032,6 @@ Index
 * texmfvar:                              mktex configuration. (line 122)
 * TEXMFVAR:                              mktex configuration. (line 123)
 * TEXMFVAR <1>:                          Safe filenames.      (line  26)
-* texmf_casefold_search:                 Casefolding search.  (line  12)
-* TEXMF_OUTPUT_DIRECTORY, and missfont.log: mktex script names.
-                                                              (line  39)
-* TEXMF_OUTPUT_DIRECTORY, and paranoid output files: Safe filenames.
-                                                              (line  21)
 * TEXPICTS:                              Supported file formats.
                                                               (line  79)
 * TEXPKS:                                Supported file formats.
@@ -4042,9 +4045,6 @@ Index
 * TEXSIZES:                              Fallback font.       (line   6)
 * TEXSOURCES:                            Supported file formats.
                                                               (line 192)
-* TEX_HUSH:                              Searching overview.  (line  63)
-* TEX_HUSH <1>:                          Suppressing warnings.
-                                                              (line   6)
 * TFMFONTS:                              Supported file formats.
                                                               (line 203)
 * tilde expansion:                       Tilde expansion.     (line   6)
@@ -4081,9 +4081,9 @@ Index
 * unrestricted mode, for output files:   Safe filenames.      (line  13)
 * unusable ls-R warning:                 ls-R.                (line  51)
 * usage patterns, finding:               Logging.             (line   6)
-* USERPROFILE, as ~ expansion:           Tilde expansion.     (line   6)
 * USE_TEXMFVAR:                          mktex configuration. (line 128)
 * USE_VARTEXFONTS:                       mktex configuration. (line 118)
+* USERPROFILE, as ~ expansion:           Tilde expansion.     (line   6)
 * varfonts:                              mktex configuration. (line 112)
 * variable expansion:                    Variable expansion.  (line   6)
 * variable.c:                            Variable expansion.  (line  32)
@@ -4124,66 +4124,66 @@ Index
 
 
 Tag Table:
-Node: Top1483
-Node: Introduction2265
-Node: History4360
-Node: unixtex.ftp9010
-Node: Security10494
-Node: Global font cache and security13215
-Node: TeX directory structure15212
-Node: Path searching19387
-Node: Searching overview20345
-Node: Path sources24270
-Node: Config files25544
-Node: Path expansion30602
-Node: Default expansion31573
-Node: Variable expansion33709
-Node: Tilde expansion35180
-Node: Brace expansion36230
-Node: KPSE_DOT expansion37227
-Node: Subdirectory expansion37752
-Node: Casefolding search40207
-Node: Casefolding rationale40984
-Node: Casefolding examples42345
-Node: Filename database47574
-Node: ls-R48588
-Node: Filename aliases52465
-Node: Database format53711
-Node: Invoking kpsewhich54772
-Node: Path searching options55755
-Node: Specially-recognized files65767
-Node: Auxiliary tasks67250
-Node: Standard options71396
-Node: TeX support71764
-Node: Supported file formats73123
-Node: File lookup81878
-Node: Glyph lookup83691
-Node: Basic glyph lookup84839
-Node: Fontmap85751
-Node: Fallback font88365
-Node: Suppressing warnings89301
-Node: mktex scripts90466
-Node: mktex configuration91711
-Node: mktex script names97820
-Node: mktex script arguments99505
-Node: Programming100428
-Node: Programming overview101071
-Node: Calling sequence103984
-Node: Safe filenames109330
-Ref: openout_any109489
-Node: Program-specific files113366
-Node: Programming with config files114419
-Node: Reporting bugs116068
-Node: Bug checklist116746
-Node: Mailing lists120314
-Node: Debugging120991
-Node: Logging126261
-Node: Common problems128174
-Node: Unable to find files128653
-Node: Slow path searching131121
-Node: Unable to generate fonts132522
-Node: TeX or Metafont failing135064
-Node: Index136274
+Node: Top1479
+Node: Introduction2261
+Node: History4352
+Node: unixtex.ftp8972
+Node: Security10454
+Node: Global font cache and security13167
+Node: TeX directory structure15158
+Node: Path searching19333
+Node: Searching overview20291
+Node: Path sources24198
+Node: Config files25468
+Node: Path expansion30516
+Node: Default expansion31485
+Node: Variable expansion33607
+Node: Tilde expansion35076
+Node: Brace expansion36124
+Node: KPSE_DOT expansion37119
+Node: Subdirectory expansion37644
+Node: Casefolding search40084
+Node: Casefolding rationale40861
+Node: Casefolding examples42219
+Node: Filename database47441
+Node: ls-R48455
+Node: Filename aliases52327
+Node: Database format53569
+Node: Invoking kpsewhich54618
+Node: Path searching options55601
+Node: Specially-recognized files65603
+Node: Auxiliary tasks67078
+Node: Standard options71222
+Node: TeX support71590
+Node: Supported file formats72948
+Node: File lookup81699
+Node: Glyph lookup83504
+Node: Basic glyph lookup84652
+Node: Fontmap85560
+Node: Fallback font88168
+Node: Suppressing warnings89104
+Node: mktex scripts90267
+Node: mktex configuration91510
+Node: mktex script names97603
+Node: mktex script arguments99286
+Node: Programming100201
+Node: Programming overview100844
+Node: Calling sequence103755
+Node: Safe filenames109092
+Ref: openout_any109251
+Node: Program-specific files113104
+Node: Programming with config files114157
+Node: Reporting bugs115804
+Node: Bug checklist116482
+Node: Mailing lists120039
+Node: Debugging120716
+Node: Logging125973
+Node: Common problems127880
+Node: Unable to find files128357
+Node: Slow path searching130813
+Node: Unable to generate fonts132208
+Node: TeX or Metafont failing134744
+Node: Index135946
 
 End Tag Table
 
