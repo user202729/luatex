@@ -313,8 +313,16 @@ else
 end
 
 if luadebugoption == 0  then
-  package.loaded.debug = nil
-  debug = nil
+
+  for k,_  in pairs(package.loaded.debug) do 
+   if not(k=='traceback') then package.loaded.debug[k] = nil; end 
+  end
+
+  --[==[ Not really necessary ]==]
+  for k,v in pairs(debug) do 
+   if not(k=='traceback') then debug[k] = nil; end 
+  end
+
 end
 
 
