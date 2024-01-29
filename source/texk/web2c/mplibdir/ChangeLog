@@ -1,40 +1,41 @@
-2023-09-17  TANAKA Takuji  <ttk@t-lab.opal.ne.jp>
+2024-01-26 Luigi Scarso <luigi.scarso@gmail.com>
+	* Added  source/libs/mpfi/TLpatches and source/libs/mpfi/m4
 
-	* mptraptest.test:
-	Make easier to test on Windows.
+2024-01-03 Luigi Scarso <luigi.scarso@gmail.com>
+	* Fixed "++" and "+-+" by replacing a*a with sqr(a). Better error message for square root of negative numbers.
 
-2023-09-16  TANAKA Takuji  <ttk@t-lab.opal.ne.jp>
+2024-01-02 Luigi Scarso <luigi.scarso@gmail.com>
+	*  fixed negate for mpfi.
 
-	* mp.w: Fixed a buffer overflow.
+2023-12-31 Luigi Scarso <luigi.scarso@gmail.com>
+	* fixed check interval for square root
 
-2023-09-10  TANAKA Takuji  <ttk@t-lab.opal.ne.jp>
-
-	* decContext.{c,h}, decNumber.{c,h}, decNumberLocal.h:
-	Convert newline from CRLF to LF.
-
-2023-08-20  TANAKA Takuji  <ttk@t-lab.opal.ne.jp>
-
-	* {dvitomp,mptraptest}.test:
-	Make easier to test on Windows.
-
-2023-03-09  Karl Berry  <karl@tug.org>
-	* TL'23 release.
+2023-12-30 Luigi Scarso <luigi.scarso@gmail.com>
+	* Fixed allocation of the buffer for the file extension.
+	* Fixed position of verbatim_written in mpxout.w
 
 2023-01-19 Luigi Scarso <luigi.scarso@gmail.com>
-    * MetaPost: svg->dx, svg->dy are now double (better precision) .
+        * MetaPost: svg->dx, svg->dy are now double (better precision) .
+
+2022-09-13 Luigi Scarso <luigi.scarso@gmail.com>
+	* Interval arithmetic: new primitives interval_get_left_endpoint,
+	 interval_get_right_endpoint, interval_set.
+
+2022-09-01 Luigi Scarso <luigi.scarso@gmail.com>
+	* Interval arithmetic: mpost compiles without errors.
+
 
 2022-07-31 Luigi Scarso <luigi.scarso@gmail.com>
-    * MetaPost: Working on the file extension (work in progress).
+	* MetaPost: Working on the file extension (work in progress).
 
 2022-05-28  Akira Kakuto  <kakuto@jcom.zaq.ne.jp>
-
         * mp.w: Typo.
 
 2022-05-23  Luigi Scarso <luigi.scarso@gmail.com>
-    * Fixed mp_begin_iteration (H.Hagen)
+	* Fixed mp_begin_iteration (H.Hagen)
 
 2022-05-15  Luigi Scarso <luigi.scarso@gmail.com>
-    * Fixed a memory leak in mplib (H.Hagen)
+	* Fixed a memory leak in mplib (H.Hagen)
 
 2022-03-21  Karl Berry  <karl@tug.org>
 	* TL'22 release.
