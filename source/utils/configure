@@ -4176,6 +4176,7 @@ case $enable_mp in #(
 esac
 
 test "x$enable_web2c:$enable_mp" = xyes:yes && {
+  need_mpfi=yes
   need_mpfr=yes
   need_cairo=yes
   need_libpng=yes
@@ -4193,6 +4194,7 @@ case $enable_pmp in #(
 esac
 
 test "x$enable_web2c:$enable_pmp" = xyes:yes && {
+  need_mpfi=yes
   need_mpfr=yes
   need_cairo=yes
   need_libpng=yes
@@ -4211,6 +4213,7 @@ case $enable_upmp in #(
 esac
 
 test "x$enable_web2c:$enable_upmp" = xyes:yes && {
+  need_mpfi=yes
   need_mpfr=yes
   need_cairo=yes
   need_libpng=yes
