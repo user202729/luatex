@@ -76,7 +76,7 @@ extern scaled one_inch;
 extern scaled one_true_inch;
 extern scaled one_hundred_bp;
 extern scaled one_bp;
-extern int ten_pow[10];
+extern const int ten_pow[10];
 
 extern void pdf_flush(PDF);
 extern void pdf_room(PDF, int);

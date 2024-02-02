@@ -75,7 +75,7 @@ typedef enum { FE_FAIL, FE_RETURN_NULL } file_error_mode;
 
 /* pdfgen.w */
 
-extern int ten_pow[10];
+extern const int ten_pow[10];
 __attribute__ ((format(printf, 2, 3)))
 extern void pdf_printf(PDF, const char *fmt, ...);
 extern void pdf_begin_obj(PDF, int, int);
