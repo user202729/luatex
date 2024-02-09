@@ -1,0 +1,23 @@
+@x srcdir/etex.ch l.536
+othercases print("[unknown integer parameter!]")
+@y
+@/@<synctex case for |print_param|@>@/
+othercases print("[unknown integer parameter!]")
+@z
+
+@x tex.web l.12533
+left_edge:=cur_h; cur_v:=cur_v-height(this_box);
+@y
+save_loc:=dvi_offset+dvi_ptr; left_edge:=cur_h; cur_v:=cur_v-height(this_box);
+@z
+
+@x synctex-mem.ch0 l.236
+primitive("synctex",assign_int,int_base+synctex_code);@/
+@!@:synctex_}{\.{\\synctex} primitive@>
+@y
+primitive("synctex",assign_int,int_base+synctex_code);@/
+@!@:synctex_}{\.{\\synctex} primitive@>
+
+@ @<synctex case for |print_param|@>=
+synctex_code:    print_esc("synctex");
+@z
