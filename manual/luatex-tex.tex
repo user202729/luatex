@@ -204,6 +204,8 @@ index into \type {status}. The current list is:
 \NC \type{save_size}          \NC save stack size \NC \NR
 \NC \type{shell_escape}       \NC \type {0} means disabled, \type {1} means anything is permitted, and \type {2} is restricted \NC \NR
 \NC \type{safer_option}       \NC \type {1} means safer is enforced \NC \NR
+\NC \type{luadebug_option}    \NC true if the \type{debug} library is enabled at command line \NC\NR
+\NC \type{output_directory}   \NC the value of the output directory \NC \NR
 \NC \type{kpse_used}          \NC \type {1} means that kpse is used \NC \NR
 \NC \type{stack_size}         \NC input stack size \NC \NR
 \NC \type{str_ptr}            \NC number of strings \NC \NR
@@ -2827,25 +2829,57 @@ Like kpsewhich's \type {-expand-braces}:
 
 \libindex{in_name_ok}
 
-Return true if \type{fname} is acceptable to open for reading. 
+Returns true if \type{fname} is acceptable to open for reading, otherwise false and 
+write a message to standard error. 
 
 \startfunctioncall
-<boolean> r = kpse_in_name_ok(<string> fname)
+<boolean> r = kpse.in_name_ok(<string> fname)
 \stopfunctioncall
 
+\startsubsection[title={\type {in_name_ok_silent_extended}}]
+
+\libindex{in_name_ok_silent_extended}
+
+\startfunctioncall
+<boolean> r = kpse.in_name_ok_silent_extended(<string> fname)
+\stopfunctioncall
+
+Returns true if \type{fname} is acceptable to open for reading;
+the values of \type{TEXMFVAR} and \type{TEXMFSYSVAR} are also
+checked for absolute filenames. Returns false otherwise but it doesn't write
+a message to standard error.
+
 \stopsubsection
+
 
 \startsubsection[title={\type {out_name_ok}}]
 
 \libindex{out_name_ok}
 
-Return true if \type{fname} is acceptable to open for writing. 
+Returns true if \type{fname} is acceptable to open for writing. 
 
 \startfunctioncall
-<boolean> r = kpse_out_name_ok(<string> fname)
+<boolean> r = kpse.out_name_ok(<string> fname)
 \stopfunctioncall
 
 \stopsubsection
+
+
+\startsubsection[title={\type {out_name_ok_silent_extended}}]
+
+\libindex{out_name_ok_silent_extended}
+
+\startfunctioncall
+<boolean> r = kpse.out_name_ok_silent_extended(<string> fname)
+\stopfunctioncall
+
+Returns true if \type{fname} is acceptable to open for writing;
+the values of \type{TEXMFVAR} and \type{TEXMFSYSVAR} are also
+checked for absolute filenames. Returns false otherwise but it doesn't write
+a message to standard error.
+
+\stopsubsection
+
 
 
 

@@ -86,6 +86,7 @@ consequence. The following command|-|line options are understood:
 \NC \type{--kpathsea-debug=NUMBER}      \NC set path searching debugging flags according to the bits of
                                            \type {NUMBER} \NC \NR
 \NC \type{--lua=FILE}                   \NC load and execute a \LUA\ initialization script \NC\NR
+\NC \type{--luadebug}                   \NC enable the \type{debug} library\NC\NR
 \NC \type{--[no-]mktex=FMT}             \NC disable/enable \type {mktexFMT} generation with \type {FMT} is
                                             \type {tex} or \type {tfm} \NC \NR
 \NC \type{--nosocket}                   \NC disable the \LUA\ socket library \NC\NR
@@ -137,6 +138,10 @@ The file names for output files that are generated automatically are created by
 attaching the proper extension (\type {log}, \type {pdf}, etc.) to the found
 \prm {jobname}. These files are created in the directory pointed to by \type
 {--output-directory}, or in the current directory, if that switch is not present.
+If \type{--output-directory} is not empty, its value it's copied to the
+\type{TEXMF_OUTPUT_DIRECTORY} env. variable; if it's empty, the value of
+\type{TEXMF_OUTPUT_DIRECTORY} is the value of the output directory.
+
 
 Without the \type {--lua} option, command line processing works like it does in
 any other \WEBC|-|based typesetting engine, except that \LUATEX\ has a few extra
@@ -165,8 +170,8 @@ in the following order:
 
 \startitem
     Then it checks the various safety switches. You can use those to disable some
-    \LUA\ commands that can easily be abused by a malicious document. At the
-    moment, \type {--safer} \type {nil}s the following functions:
+    \LUA\ commands that can easily be abused by a malicious document. Currently
+    \type {--safer} nils the following functions:
 
     \blank
 
@@ -189,6 +194,23 @@ in the following order:
 
     Finally, it disables the \type {socket} library unconditionally (but not the
     \type {mime} library which is always available).
+
+    From version 1.18.0  and if  \KPATHSEA\ is used, with the exception of \type{debug.traceback}
+    the \type{debug} library is not enabled by default; it can
+    be enabled with the \type{--luadebug} switch. The \type{debug} library
+    is always enabled in shell-escape mode.
+
+   Also from version 1.18.0 and if  \KPATHSEA\ is used, the functions
+   \type{os.rename},\type{os.remove}, \type{lfs.attributes}, \type{lfs.chdir},
+   \type{lfs.lock_dir}, \type{lfs.dir}, \type{lfs.link}, \type{lfs.mkdir},
+   \type{lfs.rmdir}, \type{lfs.symlinkattributes}, \type{lfs.touch} 
+   return \type{true} if both \type{kpse.in_name_ok_silent_extended} and
+   \type{kpse.out_name_ok_silent_extended} validate the pathname;
+   \type{lfs.attributes}, \type{lfs.dir} and  \type{lfs.symlinkattributes} are validated
+   only against \type{kpse.in_name_ok_silent_extended}.
+
+
+
 \stopitem
 
 \startitem
