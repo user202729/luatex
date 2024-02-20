@@ -182,8 +182,8 @@ in the following order:
                             \type {spawn} \type {setenv}
                             \type {rename} \type {remove} \type {tmpdir} \NC \NR
         \NC \type {io}  \NC \type {popen} \type {output} \type {tmpfile} \NC \NR
-        \NC \type {lfs} \NC \type {rmdir} \type {mkdir} \type {chdir} \type {lock}
-                            \type {touch} \NC \NR
+        \NC \type {lfs} \NC \type {rmdir} \type {mkdir} \type {mkdirp} \type {chdir}
+                            \type {lock}  \type {touch} \NC \NR
         \LL
     \stoptabulate
 
@@ -202,7 +202,7 @@ in the following order:
 
    Also from version 1.18.0 and if  \KPATHSEA\ is used, the functions
    \type{os.rename},\type{os.remove}, \type{lfs.attributes}, \type{lfs.chdir},
-   \type{lfs.lock_dir}, \type{lfs.dir}, \type{lfs.link}, \type{lfs.mkdir},
+   \type{lfs.lock_dir}, \type{lfs.dir}, \type{lfs.link}, \type{lfs.mkdir}, \type{lfs.mkdirp},
    \type{lfs.rmdir}, \type{lfs.symlinkattributes}, \type{lfs.touch} 
    return \type{true} if both \type{kpse.in_name_ok_silent_extended} and
    \type{kpse.out_name_ok_silent_extended} validate the pathname;
@@ -385,7 +385,8 @@ instance, when we started with \LUATEX\ we added some helpers to the \type
 {lfs.isdir} and \type {lfs.isfile} were speedy and better variants of what could
 be done with \type {lfs.attributes}. The additional function \type
 {lfs.shortname} takes a file name and returns its short name on \type {win32}
-platforms. Finally, for non|-|\type {win32} platforms only, we provided \type
+platforms; \type{lfs.mkdirp} is like \type{lfs.mkdir} but make parent directories as needed.
+Finally, for non|-|\type {win32} platforms only, we provided \type
 {lfs.readlink} that takes an existing symbolic link as argument and returns its
 name. However, the \type {lfs} library evolved so we have dropped these in favour of
 pure \LUA\ variants. The \type {shortname} helper is obsolete and now just
