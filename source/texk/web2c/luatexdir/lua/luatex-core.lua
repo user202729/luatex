@@ -31,15 +31,17 @@ local gmatch         = string.gmatch
 --
 function lfs.mkdirp(path)
  local full=""
+ local r1,r2,r3
  for sub in gmatch(path,"(/*[^\\/]+)") do 
   full=full..sub
-  lfs.mkdir(full)
+  r1,r2,r3 = lfs.mkdir(full)
  end
+ return r1,r2,r3 
 end
 
 
 
-if kpseused == 1 then
+if kpseused == 1 and (status.shell_escape ~=1)  then
 
     local type = type
     local gsub = string.gsub
@@ -276,10 +278,12 @@ if kpseused == 1 then
      local check1 = kpse_in_name_ok_silent_extended(name) and kpse_out_name_ok_silent_extended(name)  
      if check1 then 
         local full=""
-	for sub in gmatch(name,"(/*[^\\/]+)") do 
+        local r1,r2,r3 
+        for sub in gmatch(name,"(/*[^\\/]+)") do 
 	  full=full..sub
-  	  lfs_mkdir(full)
+  	  r1,r2,r3 = lfs_mkdir(full)
         end
+        return r1,r2,r3
      else
        return nil, LUATEX_EPERM_MSG,LUATEX_EPERM
      end
@@ -404,6 +408,7 @@ if saferoption == 1 then
     lfs.touch  = installdummy("lfs.touch")
     lfs.rmdir  = installdummy("lfs.rmdir")
     lfs.mkdir  = installdummy("lfs.mkdir")
+    lfs.mkdirp  = installdummy("lfs.mkdirp")
 
 
     package.loaded.debug = nil

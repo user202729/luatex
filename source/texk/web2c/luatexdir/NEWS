@@ -4,9 +4,10 @@ LuaTeX 1.18.0 2024-02-13
 
 - New kpse.in_name_ok_silent_extended and kpse.in_name_ok_silent_extended
 - New kpse.in_name_ok, kpse.in_name_ok
+- New lfs.mkdirp that make parent directories as needed
 - In kpse mode os.rename,os.remove, lfs.attributes,
   lfs.chdir, lfs.lock_dir, lfs.dir, lfs.link,
-  lfs.mkdir, lfs.rmdir, lfs.symlinkattributes, lfs.touch 
+  lfs.mkdir, lfs.mkdirp, lfs.rmdir, lfs.symlinkattributes, lfs.touch 
   are now validated with kpse.in_name_ok_silent_extended  *and* kpse.out_name_ok_silent_extended;
   lfs.attributes, lfs.dir and lfs.symlinkattributes are now validated only against kpse.in_name_ok_silent_extended
 - With --safer, all debug functions except traceback are nil 

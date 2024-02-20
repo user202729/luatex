@@ -1,3 +1,12 @@
+2024-02-20  Luigi Scarso <luigi.scarso@gmail.com>
+	* in kpse mode, --shell-escape enable the standard lfs.* and os.* functions otherwise protected
+        * fixed lfs.mkdirp return value
+
+
+2024-02-19  Luigi Scarso <luigi.scarso@gmail.com>
+        *  new function lfs.mkdirp -- make parent directories as needed.
+
+
 2024-02-04  Luigi Scarso <luigi.scarso@gmail.com>
 	* LuaTeX 1.18.0.
 
