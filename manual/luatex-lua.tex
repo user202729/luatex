@@ -215,7 +215,7 @@ in the following order:
 
 \startitem
     When \LUATEX\ starts it sets the \type {locale} to a neutral value. If for
-    some reason you use \type {os.locale}, you need to make sure you \type {nil}
+    some reason you use \type {os.setlocale}, you need to make sure you \type {nil}
     it afterwards because otherwise it can interfere with code that for instance
     generates dates. You can ignore the \type {locale} with:
 
