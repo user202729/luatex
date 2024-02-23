@@ -1980,10 +1980,12 @@ You can kick in your own nesting level visualizer, for instance:
 
 \starttyping
 callback.register("input_level_string",function(n)
-         if tex.tracingmacros > 0 and tex.count.tracingstacklevels > 0 then
+ if tex.tracingmacros > 0 and tex.count.tracingstacklevels > 0 then
     if tex.tracingmacros > 1 then
         return "! " .. string.rep(">",n) .. " "
     end
+  end
+  return ""
 end)
 \stoptyping
 
@@ -2000,6 +2002,7 @@ Or, in sync with other engines (not checked):
         return string.rep("~",l) .. string.rep(".",n-l)
       end
     end
+    return ""
   end)
 }
 \stoptyping
