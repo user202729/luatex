@@ -4067,6 +4067,23 @@ static synctex_status_t _synctex_match_string(synctex_scanner_p scanner, const c
     }
 }
 
+static int _synctex_strtoi(char * ptr, char ** endptr) {
+    int result = 0;
+    while (*ptr==' ') {
+        ptr++;
+    }
+    synctex_bool_t negative = (*ptr=='-');
+    if (negative) {
+        ptr++;
+    }
+    while (*ptr>='0' && *ptr<='9') {
+        result = result*10 + *ptr - '0';
+        ptr++;
+    }
+    *endptr = ptr;
+    return negative?-result:result;
+}
+
 /*  Used when parsing the synctex file.
  *  Decode an integer.
  *  First, field separators, namely ':' and ',' characters are skipped
@@ -4101,7 +4118,7 @@ static synctex_is_s _synctex_decode_int(synctex_scanner_p scanner) {
             return (synctex_is_s){0,SYNCTEX_STATUS_NOT_OK};
         }
     }
-    result = (int)strtol(ptr, &end, 10);
+    result = _synctex_strtoi(ptr, &end);
     if (end>ptr) {
         SYNCTEX_CUR = end;
         return (synctex_is_s){result,SYNCTEX_STATUS_OK};
