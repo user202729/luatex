@@ -1112,7 +1112,16 @@ void fire_up(halfword c)
 
 void resume_after_output(void)
 {
-    if ((iloc != null) || ((token_type != output_text) && (token_type != backed_up))) {
+   /* $Id: unbalanced-braces.ch 70173 2024-02-26 15:53:56Z karl $*/
+   /* Fix overrun/underrun of \write and \output. David Fuchs, 2024.*/
+   /* Original line :*/
+   /*if ((iloc != null) || ((token_type != output_text) && (token_type != backed_up))) {*/
+
+   /*tex output-ending brace may have been backed-up */
+   while ((istate == token_list) &&  (iloc == null) &&  (token_type == backed_up)) {
+    end_token_list();
+   }  
+   if ((istate != token_list) || (iloc != null) || (token_type !=output_text)){
         /*tex Recover from an unbalanced output routine */
         print_err("Unbalanced output routine");
         help2(
@@ -1125,12 +1134,12 @@ void resume_after_output(void)
             get_token();
         } while (iloc != null);
     }
-    /*tex Conserve stack space in case more outputs are triggered. */
-    end_token_list();
     end_graf(bottom_level);
     unsave();
     output_active = false;
     insert_penalties = 0;
+    /*tex Conserve stack space in case more outputs are triggered. */
+    end_token_list();
     /*tex Ensure that box |output_box| is empty after output. */
     if (box(output_box_par) != null) {
         print_err("Output routine didn't use all of \\box");
