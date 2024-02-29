@@ -1931,11 +1931,12 @@ the executable after loading and executing the startup file.
 \NC \type{max_print_line}   \NC number   \NC     79  \NC cf.\ web2c docs \NC \NR
 \NC \type{hash_extra}       \NC number   \NC      0  \NC cf.\ web2c docs \NC \NR
 \NC \type{pk_dpi}           \NC number   \NC     72  \NC cf.\ web2c docs \NC \NR
-\NC \type{trace_file_names} \NC boolean  \NC true
+\NC \type{trace_file_names} \NC boolean  \NC true 
 \NC
     \type {false} disables \TEX's normal file open|-|close feedback (the
     assumption is that callbacks will take care of that)
 \NC \NR
+\NC \type{trace_extra_newline} \NC boolean  \NC false \NC adds an extra newline in \type{\tracingmacros} \NC\NR
 \NC \type{file_line_error} \NC boolean \NC false
 \NC
     do \type {file:line} style error messages
