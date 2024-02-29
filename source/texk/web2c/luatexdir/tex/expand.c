@@ -920,17 +920,7 @@ void macro_call(void)
         to itself will not require unbounded stack space.
 
     */
-    /* In strict order: */
-    /* first:
-    /* % $Id: locnull-optimize.ch 70150 2024-02-25 17:08:15Z karl $ */
-    /* % (public domain) */
-    /* second:
-    /* % $Id: unbalanced-braces.ch 70173 2024-02-26 15:53:56Z karl $ */
-    /* % Fix overrun/underrun of \write and \output. David Fuchs, 2024. */
-
-    /* Original line: */
-    /*while ((istate == token_list) && (iloc == null) && (token_type != v_template)) {*/
-    while ((iloc == null) && (token_type != v_template) && (token_type != output_text)) {
+    while ((istate == token_list) && (iloc == null) && (token_type != v_template)) {
         /*tex Conserve stack space. */
         end_token_list();
     }
