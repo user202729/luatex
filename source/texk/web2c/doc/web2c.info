@@ -1,4 +1,4 @@
-This is web2c.info, produced by makeinfo version 7.0.3 from web2c.texi.
+This is web2c.info, produced by makeinfo version 7.0.2 from web2c.texi.
 
 This file documents the installation and use of the programs in Web2c,
 an implementation of Donald Knuth’s TeX system.
@@ -58,7 +58,7 @@ Web2c
 
 This document describes how to install and use the programs in the Web2c
 implementation of the TeX system, especially for Unix systems.  It
-corresponds to Web2c version 2023, released in October 2023.
+corresponds to Web2c version 2024, released in March 2024.
 
 * Menu:
 
@@ -83,8 +83,8 @@ File: web2c.info,  Node: Introduction,  Next: Installation,  Prev: Top,  Up: Top
 1 Introduction
 **************
 
-This manual corresponds to version 2023 of Web2c, released in October
-2023.
+This manual corresponds to version 2024 of Web2c, released in March
+2024.
 
    “Web2c” (also spelled Web2C) is the name of a TeX implementation,
 originally for Unix, but now also running under Windows and other
@@ -4604,78 +4604,78 @@ Index
 
 Tag Table:
 Node: Top2764
-Node: Introduction3838
-Node: Installation7621
-Node: configure options9713
-Node: Compile-time options11871
-Node: Additional targets13009
-Node: Triptrap14382
-Node: Commonalities15963
-Node: Option conventions16636
-Node: Common options17919
-Node: Path searching22833
-Node: Output file location23829
-Node: Three programs27052
-Node: Runtime options27767
-Node: Initial and virgin30962
-Node: Memory dumps31943
-Node: Creating memory dumps32399
-Node: Determining the memory dump to use33618
-Node: Hardware and memory dumps35263
-Node: Editor invocation38079
-Node: \input filenames38990
-Node: \input quoted filename40601
-Node: \input braced filename41394
-Node: \input filename caveats42344
-Node: TeX43910
-Node: tex invocation45086
-Node: Initial TeX52432
-Node: Formats53852
-Node: Languages and hyphenation56729
-Node: MLTeX57159
-Node: \charsubdef58815
-Node: \tracingcharsubdef61220
-Node: TCX files61819
-Node: patgen invocation67370
-Node: Shell escapes68093
-Node: IPC and TeX71989
-Node: TeX extensions72575
-Node: Metafont75366
-Node: mf invocation76658
-Node: Initial Metafont80644
-Node: Modes82342
-Node: Online Metafont graphics84664
-Node: gftodvi invocation88269
-Node: mft invocation91221
-Node: MetaPost95367
-Node: mpost invocation96209
-Node: Initial MetaPost101455
-Node: dvitomp invocation102406
-Node: BibTeX103103
-Node: bibtex invocation103464
-Node: Basic BibTeX style files106070
-Node: WEB107470
-Node: tangle invocation108703
-Node: weave invocation110903
-Node: pooltype invocation112358
-Node: DVI utilities113508
-Node: dvicopy invocation114454
-Node: dvitype invocation115787
-Node: dvitype output example118202
-Node: Font utilities121327
-Node: Font file formats122521
-Node: gftopk invocation125856
-Node: pktogf invocation127091
-Node: pktype invocation128301
-Node: gftype invocation131228
-Node: tftopl invocation135859
-Node: pltotf invocation140621
-Node: vftovp invocation141702
-Node: vptovf invocation144031
-Node: Font utilities available elsewhere145092
-Node: Legalisms147359
-Node: References148820
-Node: Index153056
+Node: Introduction3836
+Node: Installation7617
+Node: configure options9709
+Node: Compile-time options11867
+Node: Additional targets13005
+Node: Triptrap14378
+Node: Commonalities15959
+Node: Option conventions16632
+Node: Common options17915
+Node: Path searching22829
+Node: Output file location23825
+Node: Three programs27048
+Node: Runtime options27763
+Node: Initial and virgin30958
+Node: Memory dumps31939
+Node: Creating memory dumps32395
+Node: Determining the memory dump to use33614
+Node: Hardware and memory dumps35259
+Node: Editor invocation38075
+Node: \input filenames38986
+Node: \input quoted filename40597
+Node: \input braced filename41390
+Node: \input filename caveats42340
+Node: TeX43906
+Node: tex invocation45082
+Node: Initial TeX52428
+Node: Formats53848
+Node: Languages and hyphenation56725
+Node: MLTeX57155
+Node: \charsubdef58811
+Node: \tracingcharsubdef61216
+Node: TCX files61815
+Node: patgen invocation67366
+Node: Shell escapes68089
+Node: IPC and TeX71985
+Node: TeX extensions72571
+Node: Metafont75362
+Node: mf invocation76654
+Node: Initial Metafont80640
+Node: Modes82338
+Node: Online Metafont graphics84660
+Node: gftodvi invocation88265
+Node: mft invocation91217
+Node: MetaPost95363
+Node: mpost invocation96205
+Node: Initial MetaPost101451
+Node: dvitomp invocation102402
+Node: BibTeX103099
+Node: bibtex invocation103460
+Node: Basic BibTeX style files106066
+Node: WEB107466
+Node: tangle invocation108699
+Node: weave invocation110899
+Node: pooltype invocation112354
+Node: DVI utilities113504
+Node: dvicopy invocation114450
+Node: dvitype invocation115783
+Node: dvitype output example118198
+Node: Font utilities121323
+Node: Font file formats122517
+Node: gftopk invocation125852
+Node: pktogf invocation127087
+Node: pktype invocation128297
+Node: gftype invocation131224
+Node: tftopl invocation135855
+Node: pltotf invocation140617
+Node: vftovp invocation141698
+Node: vptovf invocation144027
+Node: Font utilities available elsewhere145088
+Node: Legalisms147355
+Node: References148816
+Node: Index153052
 
 End Tag Table
 

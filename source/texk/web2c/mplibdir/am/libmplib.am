@@ -1,4 +1,4 @@
-## $Id: libmplib.am 61575 2022-01-11 22:47:10Z karl $
+## $Id: libmplib.am 69664 2024-02-01 22:56:12Z karl $
 ## texk/web2c/mplibdir/am/libmplib.am: Makefile fragment for libmplib.
 ##
 ## Copyright 2015-2022 Luigi Scarso <tex-live@tug.org>

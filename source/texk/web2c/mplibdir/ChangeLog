@@ -1,22 +1,43 @@
+2024-02-16  Luigi Scarso <luigi.scarso@gmail.com>
+	*  Updated manual. MetaPost 2.1
+
+2024-02-12  Luigi Scarso <luigi.scarso@gmail.com>
+	*  Fixed "warning: strncat specified bound 1 equals source length [-Wstringop-overflow=]" in mpxout.w
+
+2024-01-28  Luigi Scarso <luigi.scarso@gmail.com>
+  	*  Merge branch mpfi.
+	
 2024-01-26 Luigi Scarso <luigi.scarso@gmail.com>
-	* Added  source/libs/mpfi/TLpatches and source/libs/mpfi/m4
+	* Interval arithmetic: Added  source/libs/mpfi/TLpatches and source/libs/mpfi/m4
 
 2024-01-03 Luigi Scarso <luigi.scarso@gmail.com>
-	* Fixed "++" and "+-+" by replacing a*a with sqr(a). Better error message for square root of negative numbers.
+	* Interval arithmetic: Fixed "++" and "+-+" by replacing a*a with sqr(a). Better error message for square root of negative numbers.
 
 2024-01-02 Luigi Scarso <luigi.scarso@gmail.com>
-	*  fixed negate for mpfi.
+	*  Interval arithmetic: fixed negate for mpfi.
 
 2023-12-31 Luigi Scarso <luigi.scarso@gmail.com>
-	* fixed check interval for square root
+	* Interval arithmetic: fixed check interval for square root
 
 2023-12-30 Luigi Scarso <luigi.scarso@gmail.com>
-	* Fixed allocation of the buffer for the file extension.
-	* Fixed position of verbatim_written in mpxout.w
+	* Interval arithmetic: Fixed allocation of the buffer for the file extension.
+	* Interval arithmetic: Fixed position of verbatim_written in mpxout.w
+
+2023-09-17  Luigi Scarso <luigi.scarso@gmail.com>
+ 	*  Interval arithmetic: mp.w: Fixed a buffer overflow.
+	*  Interval arithmetic: decContext.{c,h}, decNumber.{c,h}, decNumberLocal.h: Convert newline from CRLF to LF  (thanks to TANAKA Takuji).
 
 2023-01-19 Luigi Scarso <luigi.scarso@gmail.com>
         * MetaPost: svg->dx, svg->dy are now double (better precision) .
 
+2022-11-06  Luigi Scarso <luigi.scarso@gmail.com>
+ 	*  Fixed the value of the clip-path attribute for the svg output.
+
+	
+2022-09-20  Luigi Scarso <luigi.scarso@gmail.com>
+ 	* Interval arithmetic: code for remainder (work in progress).
+
+	
 2022-09-13 Luigi Scarso <luigi.scarso@gmail.com>
 	* Interval arithmetic: new primitives interval_get_left_endpoint,
 	 interval_get_right_endpoint, interval_set.
@@ -24,6 +45,8 @@
 2022-09-01 Luigi Scarso <luigi.scarso@gmail.com>
 	* Interval arithmetic: mpost compiles without errors.
 
+2022-08-25  Luigi Scarso <luigi.scarso@gmail.com>
+  	*  Interval arithmetic: support for interval arithmetic. Initial commit 
 
 2022-07-31 Luigi Scarso <luigi.scarso@gmail.com>
 	* MetaPost: Working on the file extension (work in progress).
@@ -44,7 +67,6 @@
 	* mp.w: MetaPost 2.02 (twice).
 
 2022-01-10  Karl Berry  <karl@freefriends.org>
-
 	* am/libmplib.am,
 	* am/mplib.am: do not silence tangle-sh.
 
