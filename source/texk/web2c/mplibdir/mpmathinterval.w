@@ -1879,8 +1879,8 @@ void mp_interval_n_arg (MP mp, mp_number *ret, mp_number x_orig, mp_number y_ori
     ret->type = mp_angle_type;
     mpfi_set_si(oneeighty_angle, 180 * angle_multiplier);
     mpfi_div(oneeighty_angle, oneeighty_angle, PI_mpfi_t);
-    checkZero((mpfi_ptr)y_orig.data.num);
-    checkZero((mpfi_ptr)x_orig.data.num);
+    /*checkZero((mpfi_ptr)y_orig.data.num);*/
+    /*checkZero((mpfi_ptr)x_orig.data.num);*/
     mpfi_atan2(atan2val, y_orig.data.num, x_orig.data.num);
     mpfi_mul(ret->data.num, atan2val, oneeighty_angle);
     checkZero((mpfi_ptr)ret->data.num);

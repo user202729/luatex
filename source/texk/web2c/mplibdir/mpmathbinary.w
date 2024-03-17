@@ -149,7 +149,7 @@ static double precision_bits_to_digits (mpfr_prec_t i);
 
 @d mpfr_negative_p(a) (mpfr_sgn((a))<0)
 @d mpfr_positive_p(a) (mpfr_sgn((a))>0)
-@d checkZero(dec)  if (mpfr_zero_p(dec) && mpfr_negative_p(dec)) {
+@d checkZero(dec)  if (mpfr_zero_p(dec)) {
      mpfr_set_zero(dec,1);
    }
 
