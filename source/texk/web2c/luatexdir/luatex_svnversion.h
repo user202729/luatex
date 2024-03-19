@@ -1,4 +1,4 @@
 #ifndef luatex_svn_revision_h
 #define luatex_svn_revision_h
-#define luatex_svn_revision 7615
+#define luatex_svn_revision 7616
 #endif
