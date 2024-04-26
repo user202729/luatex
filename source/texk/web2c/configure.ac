@@ -1,4 +1,4 @@
-dnl $Id: configure.ac 69664 2024-02-01 22:56:12Z karl $
+dnl $Id: configure.ac 71024 2024-04-21 15:16:49Z karl $
 dnl Process this file with Autoconf to produce a configure script for Web2c.
 dnl
 dnl   Copyright 2015-2024 Karl Berry <tex-live@tug.org>
@@ -33,6 +33,17 @@ AC_CONFIG_MACRO_DIRS([../../m4 m4])
 WEB2CVERSION=tex_live_version()
 AC_SUBST([WEB2CVERSION])
 
+# LuaTeX requires system extensions for socket support.
+# Must be at the very beginning or warnings about compiler tests.
+# SyncTeX and plenty of others unconditionally define GNU_SOURCE,
+# so it's probably more consistent to always use it.
+
+# Also, we can't easily make it conditional on LuaTeX only because then
+# OBJEXT ends up defined as the empty string (error: no way to make
+# "basechsuffix."), which seems odd, but whatever.
+AC_MSG_NOTICE([using system extensions])
+AC_USE_SYSTEM_EXTENSIONS
+
 KPSE_COMMON([web2c programs])
 
 AM_CONDITIONAL([cross], [test "x$cross_compiling" = xyes])
@@ -46,7 +57,7 @@ KPSE_LT_HACK
 KPSE_WEB2C_PREPARE
 m4_include([ac/web2c.ac])
 
-# XeTeX now requires C++11 because ICU does :(.
+# XeTeX requires C++11 because ICU does :(.
 if test "x$enable_xetex" = xyes; then
   AC_MSG_NOTICE([checking for C++11, since XeTeX is enabled])
   AX_CXX_COMPILE_STDCXX([11])
@@ -283,7 +294,7 @@ AC_CHECK_SIZEOF([off_t], , AC_INCLUDES_DEFAULT
 [#include <kpathsea/config.h>])
 
 if test "x$with_system_kpathsea" = xyes; then
-dnl Although quite unusual, it is possible to build Web2C (TeX & Co)
+dnl It is possible to build Web2C (TeX & Co)
 dnl using installed (system) kpathsea headers and library.
 dnl In that case we need the location of <kpathsea/paths.h>.
   list="/usr/include /usr/local/include `echo $KPATHSEA_INCLUDES | sed 's/-I//g'`"
