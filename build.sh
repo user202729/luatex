@@ -317,7 +317,7 @@ TL_MAKE=$MAKE ../source/configure  $TEXLIVEOPT $CONFHOST $CONFBUILD  $WARNINGFLA
     --disable-all-pkgs \
     --disable-shared    \
     --disable-ptex \
-    --disable-largefile \
+    --enable-largefile \
     --disable-xetex \
     --disable-ipc \
     --disable-dump-share \
@@ -338,6 +338,7 @@ TL_MAKE=$MAKE ../source/configure  $TEXLIVEOPT $CONFHOST $CONFBUILD  $WARNINGFLA
     --without-system-pplib \
     --without-system-poppler \
     --without-system-gmp \
+    --without-system-mpfi \
     --without-system-mpfr \
     --without-system-teckit \
     --without-system-zlib \

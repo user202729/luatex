@@ -287,7 +287,7 @@ TL_MAKE=$MAKE ../source/configure  $CONFHOST $CONFBUILD  $WARNINGFLAGS\
     --enable-silent-rules \
     --disable-all-pkgs \
       $SHAREDENABLE    \
-    --disable-largefile \
+    --enable-largefile \
     --disable-xetex \
     --disable-ptex \
     --disable-ipc \
@@ -310,6 +310,7 @@ TL_MAKE=$MAKE ../source/configure  $CONFHOST $CONFBUILD  $WARNINGFLAGS\
     --without-system-pplib \
     --without-system-poppler \
     --without-system-gmp \
+    --without-system-mpfi \
     --without-system-mpfr \
     --without-system-teckit \
     --without-system-zlib \
