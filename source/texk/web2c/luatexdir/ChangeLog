@@ -1,3 +1,8 @@
+2024-05-13  Luigi Scarso <luigi.scarso@gmail.com>
+	* Omitprocset and ptexprefix (force _ instead of . as separator) (H.Hagen)
+	* Bump to version 1.18.2
+
+
 2024-03-25  Luigi Scarso <luigi.scarso@gmail.com>
 	* Fixed synctex message on a math node with no zero glue
 
