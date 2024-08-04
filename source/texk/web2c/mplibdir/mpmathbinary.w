@@ -1677,7 +1677,9 @@ void mp_init_randoms (MP mp, int seed) {
 
 @ @c
 void mp_binary_number_modulo (mp_number *a, mp_number b) {
-   mpfr_remainder (a->data.num, a->data.num, b.data.num, ROUNDING);
+ /* mpfr_remainder (a->data.num, a->data.num, b.data.num, ROUNDING);*/ 
+ /* This is consistent with scaled mode */
+ mpfr_fmod (a->data.num, a->data.num, b.data.num, ROUNDING); 
 }
 
 @ To consume a random  integer for the uniform generator, the program below will say `|next_unif_random|'.
