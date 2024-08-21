@@ -921,7 +921,7 @@ void macro_call(void)
         to itself will not require unbounded stack space.
 
     */
-    while ((istate == token_list) && (iloc == null) && (token_type != v_template)) {
+    while ((istate == token_list) && (token_list_ended) && (token_type != v_template)) {
         /*tex Conserve stack space. */
         end_token_list();
     }

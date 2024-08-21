@@ -38,6 +38,16 @@ typedef struct in_state_record {
     signed short cattable_field:16; /* category table used by the current line (see textoken.c) */
     boolean partial_field:8;        /* is the current line partial? (see textoken.c) */
     boolean nofilter_field:8;       /* used by token filtering */
+
+    /*
+       for flat_token_list:
+       start_ptr_field is a pointer returned by malloc(), solely owned by this in_state_record
+       loc_ptr_field points to somewhere in the buffer
+       end_ptr_field points to the end of the buffer
+    */
+    halfword *start_ptr_field;      /* pointer to the start of the buffer */
+    halfword *loc_ptr_field;        /* pointer to the current location in the buffer */
+    halfword *end_ptr_field;        /* pointer to the current location in the buffer */
 } in_state_record;
 
 extern in_state_record *input_stack;
@@ -105,6 +115,7 @@ be |skip_blanks|.
 #  define max_char_code 15      /* largest catcode for individual characters */
 
 typedef enum {
+    /* token_list = 0, */  /* for some reason token_list is defined as a macro */
     mid_line = 1,               /* |state| code when scanning a line of characters */
     skip_blanks = 2 + max_char_code,    /* |state| code when ignoring blanks */
     new_line = 3 + max_char_code + max_char_code,       /* |state| code at start of line */
@@ -287,6 +298,11 @@ corresponding token types must precede |write_text|.
 #  define token_type iindex     /* type of current token list */
 #  define param_start ilimit    /* base of macro parameters in |param_stack| */
 
+/* is the current token list fully read? Originally this is just iloc == null but flat_token_list complicates things */
+#  define token_list_ended ( \
+        assert(istate == token_list), \
+        token_type == flat_token_list ? (cur_input.loc_ptr_field == cur_input.end_ptr_field) : (iloc == null) \
+        )
 
 typedef enum {
     parameter = 0,              /* |token_type| code for parameter */
@@ -307,6 +323,7 @@ typedef enum {
     every_eof_text = 15,        /* |token_type| code for \.{\\everyeof} */
     write_text = 16,            /* |token_type| code for \.{\\write} */
     local_text = 17,            /* |token_type| code for special purposed */
+    flat_token_list = 18,       /* |token_type| code for flat token list (represented by an element in the array) */
 } token_types;
 
 extern pointer *param_stack;

@@ -1974,13 +1974,23 @@ static next_line_retval next_line(void)
 
     Let's consider now what happens when |get_next| is looking at a token list.
 
+    Returning false means the a parameter needs to be expanded,
+    so the caller should go to RESTART.
+
 */
 
 static boolean get_next_tokenlist(void)
 {
-    register halfword t = token_info(iloc);
-    /*tex Move to next. */
-    iloc = token_link(iloc);
+    register halfword t;
+    if (token_type == flat_token_list) {
+        assert(cur_input.loc_ptr_field < cur_input.end_ptr_field);
+        t = *cur_input.loc_ptr_field;
+        ++cur_input.loc_ptr_field;
+    } else {
+        t = token_info(iloc);
+        /*tex Move to next. */
+        iloc = token_link(iloc);
+    }
     if (t >= cs_token_flag) {
         /*tex A control sequence token */
         cur_cs = t - cs_token_flag;
@@ -2047,7 +2057,7 @@ void get_next(void)
         if (!get_next_file())
             goto RESTART;
     } else {
-        if (iloc == null) {
+        if (token_list_ended) {
             end_token_list();
             /*tex List exhausted, resume previous level. */
             goto RESTART;

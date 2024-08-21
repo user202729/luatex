@@ -169,6 +169,11 @@ The context is cropped, if necessary, so that the first line contains at most
 Non-current input levels whose |token_type| is `|backed_up|' are shown only if
 they have not been fully read.
 
+TODO: Note that this only works correctly when |t = token_type|
+because of the special case of |backed_up|.
+
+This is section 314.
+
 */
 
 static void print_token_list_type(int t)
@@ -229,6 +234,9 @@ static void print_token_list_type(int t)
             break;
         case local_text:
             tprint_nl("<local> ");
+            break;
+        case flat_token_list:
+            tprint_nl("<flat> ");
             break;
         default:
             tprint_nl("?");
@@ -554,7 +562,9 @@ either |backed_up| or |inserted| about 2/3 of the time. @^inner loop@>
 void end_token_list(void)
 {
     /*tex Leave a token-list input level: */
-    if (token_type >= backed_up) {
+    if (token_type == flat_token_list) {
+        free(cur_input.start_ptr_field);
+    } else if (token_type >= backed_up) {
         /*tex The token list to be deleted: */
         if (token_type <= inserted) {
             flush_list(istart);
@@ -595,7 +605,7 @@ void back_input(void)
 {
     /*tex A token list of length one: */
     halfword p;
-    while ((istate == token_list) && (iloc == null) && (token_type != v_template)) {
+    while ((istate == token_list) && (token_list_ended) && (token_type != v_template)) {
         /*tex Conserve stack space. */
         end_token_list();
     }
@@ -958,3 +968,4 @@ void pseudo_close(void)
     flush_node(pseudo_files);
     pseudo_files = p;
 }
+
