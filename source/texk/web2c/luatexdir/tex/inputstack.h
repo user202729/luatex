@@ -341,6 +341,7 @@ extern void set_trick_count(void);
 #  define ins_list(A) begin_token_list(A,inserted)      /* inserts a simple token list */
 
 extern void begin_token_list(halfword p, quarterword t);
+extern void begin_flat_token_list(halfword *flat, halfword *flat_end);
 extern void end_token_list(void);
 extern void back_input(void);
 extern void reinsert_token(boolean a, halfword pp);

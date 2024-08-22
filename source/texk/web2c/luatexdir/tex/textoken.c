@@ -18,6 +18,7 @@ LuaTeX; if not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "ptexlib.h"
+#include "stb_ds.h"
 
 #define detokenized_line() (line_catcode_table==NO_CAT_TABLE)
 
@@ -470,6 +471,49 @@ void show_token_list(int p, int q, int l)
     if (p != null)
         tprint_esc("ETC.");
 }
+
+/*
+
+   p must be a stb_ds dynamic array.
+
+   This is allowed to be inefficient because the printing is pretty inefficient anyway.
+
+   We just copy the whole token list to |TeX|-managed memory and print it.
+
+*/
+void show_flat_token_list_stb_ds(halfword *r, int l)
+{
+    show_flat_token_list(r, NULL, r + arrlen(r), l);
+}
+
+void show_flat_token_list(halfword *start, halfword *loc, halfword *end, int l)
+{
+    /*tex current node in token list being built */
+    halfword p = temp_token_head;
+    /*tex temporary new node */
+    halfword q;
+    /*tex magic pointer, correspond to |q| in |show_token_list| */
+    halfword magic;
+
+    if (loc == NULL) {
+        magic = null;
+    } else {
+        assert(start <= loc && loc < end);
+    }
+
+    halfword backup_link = token_link(temp_token_head);
+    set_token_link(temp_token_head, null);
+    for (halfword *r = start; r < end; r++) {
+        fast_store_new_token(*r);
+        if (r == loc) {
+            magic = p;
+        }
+    }
+    show_token_list(token_link(temp_token_head), magic, l);
+    flush_list(token_link(temp_token_head));
+    set_token_link(temp_token_head, backup_link);
+}
+
 
 #define do_buffer_to_unichar(a,b) do { \
     a = (halfword)str2uni(buffer+b); \
@@ -2031,6 +2075,7 @@ static boolean get_next_tokenlist(void)
                 break;
             case out_param_cmd:
                 /*tex Insert macro parameter and |goto restart|. */
+                assert(false); // this cannot happen because macro expansion are implemented by copy now
                 begin_token_list(param_stack[param_start + cur_chr - 1], parameter);
                 return false;
                 break;

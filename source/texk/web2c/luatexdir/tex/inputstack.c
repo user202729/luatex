@@ -427,7 +427,9 @@ void show_context(void)
                     print_token_list_type(token_type);
 
                     begin_pseudoprint();
-                    if (token_type < macro) {
+                    if (token_type == flat_token_list) {
+                        show_flat_token_list(cur_input.start_ptr_field, cur_input.loc_ptr_field, cur_input.end_ptr_field, 100000);
+                    } else if (token_type < macro) {
                         show_token_list(istart, iloc, 100000);
                     } else {
                         /*tex Avoid reference count. */
@@ -516,16 +518,34 @@ Here is a procedure that starts a new level of token-list input, given a token
 list |p| and its type |t|. If |t=macro|, the calling routine should set |name|
 and |loc|.
 
+If |flat| is not |NULL|, then |t| must be |flat_token_list|,
+and |flat| must be a |malloc|-ed array of |halfword|s that will be freed when the
+token list is ended.
+
+Otherwise |flat| must be |NULL|.
+In this case, if |t| $<$ |macro|, then it is possible for |p| to be |null|.
+
 */
 
-void begin_token_list(halfword p, quarterword t)
+void begin_token_list_2(halfword p, halfword *flat, halfword *flat_end, quarterword t)
 {
     push_input();
     istate = token_list;
-    istart = p;
+    if (flat != NULL) {
+        assert(t == flat_token_list);
+        assert(p == null);
+        cur_input.start_ptr_field = flat;
+        cur_input.end_ptr_field = flat_end;
+    } else {
+        assert(t != flat_token_list);
+        istart = p;
+    }
     token_type = (unsigned char) t;
-    if (t >= macro) {
+    if (t == flat_token_list) {
+        cur_input.loc_ptr_field = flat;
+    } else if (t >= macro) {
         /*tex The token list starts with a reference count. */
+        assert(p != null);
         add_token_ref(p);
         if (t == macro) {
             param_start = param_ptr;
@@ -549,6 +569,18 @@ void begin_token_list(halfword p, quarterword t)
     } else {
         iloc = p;
     }
+}
+
+void begin_token_list(halfword p, quarterword t)
+{
+    assert(t != flat_token_list);
+    begin_token_list_2(p, NULL, NULL, t);
+}
+
+void begin_flat_token_list(halfword *flat, halfword *flat_end)
+{
+    assert(flat != NULL);
+    begin_token_list_2(null, flat, flat_end, flat_token_list);
 }
 
 /*tex

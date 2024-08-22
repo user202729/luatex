@@ -95,7 +95,6 @@ extern halfword biggest_used_mark;
 extern void initialize_marks(void);
 
 extern int long_state;
-extern halfword pstack[9];
 extern void macro_call(void);
 
 

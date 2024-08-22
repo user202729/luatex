@@ -20,6 +20,8 @@ with LuaTeX; if not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "ptexlib.h"
+#define STB_DS_IMPLEMENTATION  // TODO hack, this need to be defined in exactly one file
+#include "stb_ds.h"
 
 /*tex
 
@@ -594,11 +596,9 @@ int long_state;
     |param_stack| can't be gaining entries, since |macro_call| is the only
     routine that puts anything onto |param_stack|, and it is not recursive.)
 
+    Each element of the array below is of type std_ds dynamic array.
+
 */
-
-/*tex The arguments supplied to a macro: */
-
-halfword pstack[9];
 
 /*tex
 
@@ -620,20 +620,18 @@ halfword pstack[9];
 
 void macro_call(void)
 {
+    /*tex The arguments supplied to a macro: */
+    halfword *pstack[9];
     /*tex current node in the macro's token list */
     halfword r;
-    /*tex current node in parameter token list being built */
-    halfword p = null;
-    /*tex new node being put into the token list */
-    halfword q;
+    /*tex parameter token list being built */
+    halfword *p = NULL;
     /*tex backup pointer for parameter matching */
     halfword s;
     /*tex cycle pointer for backup recovery */
     halfword t;
     /*tex auxiliary pointers for backup recovery */
     halfword u, v;
-    /*tex one step before the last |right_brace| token */
-    halfword rbrace_ptr = null;
     /*tex the number of parameters scanned */
     int n = 0;
     /*tex unmatched left braces in current parameter */
@@ -687,7 +685,6 @@ void macro_call(void)
         if (long_state >= outer_call_cmd)
             long_state = long_state - 2;
         do {
-            set_token_link(temp_token_head, null);
             if ((token_info(r) >= end_match_token)
                 || (token_info(r) < match_token)) {
                 s = null;
@@ -695,7 +692,7 @@ void macro_call(void)
                 match_chr = token_info(r) - match_token;
                 s = token_link(r);
                 r = s;
-                p = temp_token_head;
+                p = NULL;
                 m = 0;
             }
             /*tex
@@ -779,7 +776,7 @@ void macro_call(void)
                 } else {
                     t = s;
                     do {
-                        store_new_token(token_info(t));
+                        arrpush(p, token_info(t));
                         incr(m);
                         u = token_link(t);
                         v = s;
@@ -814,7 +811,7 @@ void macro_call(void)
                     /*tex Contribute an entire group to the current parameter. */
                     unbalance = 1;
                     while (1) {
-                        fast_store_new_token(cur_tok);
+                        arrpush(p, cur_tok);
                         get_token();
                         if (cur_tok == par_token) {
                             if (long_state != long_call_cmd) {
@@ -834,8 +831,7 @@ void macro_call(void)
                             }
                         }
                     }
-                    rbrace_ptr = p;
-                    store_new_token(cur_tok);
+                    arrpush(p, cur_tok);
                 } else {
                     /*tex Report an extra right brace and |goto continue|. */
                     back_input();
@@ -866,7 +862,7 @@ void macro_call(void)
                 */
                 if (cur_tok == space_token && token_info(r) <= end_match_token && token_info(r) >= match_token)
                     goto CONTINUE;
-                store_new_token(cur_tok);
+                arrpush(p, cur_tok);
             }
             incr(m);
             if (token_info(r) > end_match_token)
@@ -879,20 +875,16 @@ void macro_call(void)
 
                     Tidy up the parameter just scanned, and tuck it away. If the
                     parameter consists of a single group enclosed in braces, we
-                    must strip off the enclosing braces. That's why |rbrace_ptr|
-                    was introduced.
+                    must strip off the enclosing braces.
 
                 */
-                if ((m == 1) && (token_info(p) < right_brace_limit)
-                    && (p != temp_token_head)) {
-                    set_token_link(rbrace_ptr, null);
-                    free_avail(p);
-                    p = token_link(temp_token_head);
-                    pstack[n] = token_link(p);
-                    free_avail(p);
-                } else {
-                    pstack[n] = token_link(temp_token_head);
+                if ((m == 1) && (p != NULL) && (arrlast(p) < right_brace_limit)) {
+                    assert(is_left_brace(p[0]));
+                    assert(is_right_brace(arrlast(p)));
+                    arrdel(p, 0);
+                    arrpop(p);
                 }
+                pstack[n] = p;
                 incr(n);
                 if (tracing_macros_par > 0) {
                     begin_diagnostic();
@@ -901,7 +893,7 @@ void macro_call(void)
                     print(match_chr);
                     print_int(n);
                     tprint("<-");
-                    show_token_list(pstack[n - 1], null, 1000);
+                    show_flat_token_list_stb_ds(pstack[n - 1], 1000);
                     end_diagnostic(false);
                 }
             }
@@ -925,19 +917,47 @@ void macro_call(void)
         /*tex Conserve stack space. */
         end_token_list();
     }
-    begin_token_list(ref_count, macro);
-    iname = warning_index;
-    iloc = token_link(r);
-    if (n > 0) {
-        if (param_ptr + n > max_param_stack) {
-            max_param_stack = param_ptr + n;
-            if (max_param_stack > param_size)
-                overflow("parameter stack size", (unsigned) param_size);
+
+    /*tex Copy the expanded macro content from |r| to |data|, substituting parameter values as needed. */
+    halfword *data = NULL;
+
+    assert(token_info(r) == end_match_token);
+    {
+        pointer s = token_link(r);
+        while (s != null) {
+            halfword t = token_info(s);
+            if (t < cs_token_flag && token_cmd(t) == out_param_cmd) {  // ref get_next_tokenlist
+                /*tex Insert macro parameter. */
+                unsigned m = token_chr(t) - 1;
+                if (m >= n) {
+                    print_err("Too few arguments");
+                    help2(
+                        "It looks like this macro was defined with e.g. \\def\\a#1{#1#2}.",
+                        "This is impossible."
+                    );
+                    error();
+                }
+                memcpy(arraddnptr(data, arrlen(pstack[m])), pstack[m], sizeof(halfword) * arrlen(pstack[m]));
+            } else {
+                arrpush(data, t);
+            }
+            s = token_link(s);
         }
-        for (m = 0; m <= n - 1; m++)
-            param_stack[param_ptr + m] = pstack[m];
-        param_ptr = param_ptr + n;
     }
+
+    if (data) {
+        /*tex Convert data from |stb_ds| to |malloc|'d array. */
+        size_t len = arrlenu(data);
+        assert(len > 0);
+        halfword *data_malloc = malloc(sizeof(halfword) * len);
+        memcpy(data_malloc, data, sizeof(halfword) * len);
+        arrfree(data);
+        begin_flat_token_list(data_malloc, data_malloc + len);
+    }
+
+    iname = warning_index;
+    for (m = 0; m <= n - 1; m++)
+        arrfree(pstack[m]);
     goto EXIT;
   RUNAWAY:
     /*tex
@@ -958,10 +978,10 @@ void macro_call(void)
         );
         back_error();
     }
-    pstack[n] = token_link(temp_token_head);
+    pstack[n] = p;
     align_state = align_state - unbalance;
     for (m = 0; m <= n; m++)
-        flush_list(pstack[m]);
+        arrfree(pstack[m]);
   EXIT:
     scanner_status = save_scanner_status;
     warning_index = save_warning_index;

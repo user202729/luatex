@@ -39,6 +39,19 @@
 #  define end_match_token   0x1C00000  /* $2^{21}\cdot|end_match|$ */
 #  define protected_token   0x1C00001  /* $2^{21}\cdot|end_match|+1$ */
 
+// callable on e.g. cur_tok
+static boolean is_left_brace(int x) {
+    return x < left_brace_limit;
+}
+
+static boolean is_left_or_right_brace(int x) {
+    return x < right_brace_limit;
+}
+
+static boolean is_right_brace(int x) {
+    return is_left_or_right_brace(x) && !is_left_brace(x);
+}
+
 #  include "tex/stringpool.h"
 
 typedef struct smemory_word_ {
@@ -102,6 +115,8 @@ extern void print_meaning(void);
 
 extern void flush_list(halfword p);
 extern void show_token_list(int p, int q, int l);
+extern void show_flat_token_list(halfword *start, halfword *loc, halfword *end, int l);
+extern void show_flat_token_list_stb_ds(halfword *r, int l);
 extern void token_show(halfword p);
 
 #  define token_ref_count(a) token_info((a))    /* reference count preceding a token list */

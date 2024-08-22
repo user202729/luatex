@@ -541,7 +541,8 @@ dist_libluatex_sources += \
 EXTRA_DIST += \
 	$(dist_libluatex_sources) \
 	$(dist_libluahbtexspecific_sources) \
-	$(libluatex_web) 
+	$(libluatex_web) \
+	stb_ds_impl.c
 
 DISTCLEANFILES += $(nodist_libluatex_sources)
 
