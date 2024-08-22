@@ -810,10 +810,12 @@ void macro_call(void)
                 if (cur_tok < left_brace_limit) {
                     /*tex Contribute an entire group to the current parameter. */
                     unbalance = 1;
+                    /*tex Cache this. We know nothing like |initialize_commands| or |\partokenname| can be run during this tight loop. */
+                    halfword par_token_cache = par_token;
                     while (1) {
                         arrpush(p, cur_tok);
                         get_token();
-                        if (cur_tok == par_token) {
+                        if (cur_tok == par_token_cache) {
                             if (long_state != long_call_cmd) {
                                 if (!suppress_long_error_par) {
                                     goto RUNAWAY;
