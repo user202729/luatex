@@ -2112,7 +2112,7 @@ void get_next(void)
         }
     }
     /*tex If an alignment entry has just ended, take appropriate action. */
-    if ((cur_cmd == tab_mark_cmd || cur_cmd == car_ret_cmd) && align_state == 0) {
+    if (__builtin_expect((cur_cmd == tab_mark_cmd || cur_cmd == car_ret_cmd) && align_state == 0, 0)) {
         insert_vj_template();
         goto RESTART;
     }
