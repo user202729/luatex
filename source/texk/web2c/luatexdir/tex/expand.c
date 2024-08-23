@@ -621,7 +621,7 @@ int long_state;
 void macro_call(void)
 {
     /*tex The arguments supplied to a macro: */
-    halfword *pstack[9];
+    tl pstack[9];
     /*tex current node in the macro's token list */
     halfword r;
     /*tex parameter token list being built */
@@ -886,7 +886,8 @@ void macro_call(void)
                     arrdel(p, 0);
                     arrpop(p);
                 }
-                pstack[n] = p;
+                pstack[n] = tl_from_balanced_array(p);
+                p = NULL;
                 incr(n);
                 if (tracing_macros_par > 0) {
                     begin_diagnostic();
@@ -895,7 +896,7 @@ void macro_call(void)
                     print(match_chr);
                     print_int(n);
                     tprint("<-");
-                    show_flat_token_list_stb_ds(pstack[n - 1], 1000);
+                    tl_show(pstack[n - 1], 1000);
                     end_diagnostic(false);
                 }
             }
@@ -921,7 +922,7 @@ void macro_call(void)
     }
 
     /*tex Copy the expanded macro content from |r| to |data|, substituting parameter values as needed. */
-    halfword *data = NULL;
+    tl data = tl_alloc();
 
     assert(token_info(r) == end_match_token);
     {
@@ -939,22 +940,16 @@ void macro_call(void)
                     );
                     error();
                 }
-                memcpy(arraddnptr(data, arrlen(pstack[m])), pstack[m], sizeof(halfword) * arrlen(pstack[m]));
+                tl_extend(data, pstack[m]);
             } else {
-                arrpush(data, t);
+                tl_append(data, t);
             }
             s = token_link(s);
         }
     }
 
-    if (data) {
-        /*tex Convert data from |stb_ds| to |malloc|'d array. */
-        size_t len = arrlenu(data);
-        assert(len > 0);
-        halfword *data_malloc = malloc(sizeof(halfword) * len);
-        memcpy(data_malloc, data, sizeof(halfword) * len);
-        arrfree(data);
-        begin_flat_token_list(data_malloc, data_malloc + len);
+    if (tl_len(data)) {
+        begin_tl_token_list(data);
     }
 
     iname = warning_index;
@@ -980,7 +975,7 @@ void macro_call(void)
         );
         back_error();
     }
-    pstack[n] = p;
+    pstack[n] = tl_from_balanced_array(p);
     align_state = align_state - unbalance;
     for (m = 0; m <= n; m++)
         arrfree(pstack[m]);

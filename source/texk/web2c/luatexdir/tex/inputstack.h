@@ -39,15 +39,22 @@ typedef struct in_state_record {
     boolean partial_field:8;        /* is the current line partial? (see textoken.c) */
     boolean nofilter_field:8;       /* used by token filtering */
 
-    /*
-       for flat_token_list:
-       start_ptr_field is a pointer returned by malloc(), solely owned by this in_state_record
-       loc_ptr_field points to somewhere in the buffer
-       end_ptr_field points to the end of the buffer
-    */
-    halfword *start_ptr_field;      /* pointer to the start of the buffer */
-    halfword *loc_ptr_field;        /* pointer to the current location in the buffer */
-    halfword *end_ptr_field;        /* pointer to the current location in the buffer */
+    union {
+        struct {
+            /*
+               for flat_token_list:
+               start_ptr_field is a pointer returned by malloc(), solely owned by this in_state_record
+               loc_ptr_field points to somewhere in the buffer
+               end_ptr_field points to the end of the buffer
+            */
+            halfword *start_ptr_field;      /* pointer to the start of the buffer */
+            halfword *loc_ptr_field;        /* pointer to the current location in the buffer */
+            halfword *end_ptr_field;        /* pointer to the current location in the buffer */
+        };
+        struct {
+            tl_suffix tl_field;
+        };
+    };
 } in_state_record;
 
 extern in_state_record *input_stack;
@@ -323,7 +330,8 @@ typedef enum {
     every_eof_text = 15,        /* |token_type| code for \.{\\everyeof} */
     write_text = 16,            /* |token_type| code for \.{\\write} */
     local_text = 17,            /* |token_type| code for special purposed */
-    flat_token_list = 18,       /* |token_type| code for flat token list (represented by an element in the array) */
+    flat_token_list,            /* |token_type| code for flat token list (represented by an element in the array) */
+    tl_token_list,
 } token_types;
 
 extern pointer *param_stack;
@@ -341,6 +349,7 @@ extern void set_trick_count(void);
 #  define ins_list(A) begin_token_list(A,inserted)      /* inserts a simple token list */
 
 extern void begin_token_list(halfword p, quarterword t);
+extern void begin_tl_token_list(tl t);
 extern void begin_flat_token_list(halfword *flat, halfword *flat_end);
 extern void end_token_list(void);
 extern void back_input(void);

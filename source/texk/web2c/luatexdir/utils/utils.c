@@ -527,3 +527,237 @@ FILE * _cairo_win_tmpfile (void)
 }
 
 #endif
+
+/*
+
+    Every time we want to invalidate the value of |has_outer| in every
+    token lists, we increment |has_outer_era|.
+    Similarly for |has_par|.
+
+*/
+int has_outer_era;
+int has_par_era;
+
+struct tl_data {
+    halfword *data;      // stb_ds array, solely owned by this token list (note that token list cannot be copied safely)
+                          // technically this is double indirection, but hopefully it doesn't kill performance too much
+
+    boolean has_outer;
+    int has_outer_era;
+    boolean has_par;
+    int has_par_era;
+
+    tl prev, next;        // linked list to allow iterating through all token lists
+};
+
+struct tl_suffix_data {
+    tl_data data;
+    int index;            // index of the current token
+    int unbalance;        // unbalance("{}") = 0, unbalance("}") = 1, cannot represent "{" or "}{"
+};
+
+struct tl_data tl_data_anchor = {
+    .data = NULL,
+    .has_outer = false,
+    .has_outer_era = 0,
+    .has_par = false,
+    .has_par_era = 0,
+    .prev = &tl_data_anchor,
+    .next = &tl_data_anchor,
+};
+
+#include "stb_ds.h"
+
+void tl_construct(tl t) {
+    t->data = NULL;
+    t->has_outer = false;
+    t->has_outer_era = has_outer_era;
+    t->has_par = false;
+    t->has_par_era = has_par_era;
+    t->prev = &tl_data_anchor;
+    t->next = tl_data_anchor.next;
+    tl_data_anchor.next->prev = t;
+    tl_data_anchor.next = t;
+}
+
+tl tl_alloc(void) {
+    tl t = malloc(sizeof(struct tl_data));
+    tl_construct(t);
+    return t;
+}
+
+/* Takes ownership of |t|. */
+tl_suffix tl_suffix_from_tl(tl t) {
+    tl_suffix s = malloc(sizeof(struct tl_suffix_data));
+    s->data = *t;
+    s->index = 0;
+    s->unbalance = 0;
+    return s;
+}
+
+size_t tl_len(tl t) {
+    return arrlen(t->data);
+}
+
+/*tex
+
+    |data| must be a balanced array allocated by |stb_ds|.
+    The resulting |tl| will take ownership of |data|.
+
+*/
+tl tl_from_balanced_array(halfword *data) {
+    tl t = tl_alloc();
+    t->data = data;
+    int unbalance = 0;
+    for (int i = 0; i < arrlen(data); i++) {
+        halfword tok = data[i];
+        GET_CMD_CHR_FROM_TOK(cmd, chr, tok);
+        if (is_outer_cmd(cmd)) {
+            t->has_outer = true;
+        }
+        if (tok == par_token) {
+            t->has_par = true;
+        }
+        if (is_left_or_right_brace(tok)) {
+            if (is_left_brace(tok)) {
+                unbalance++;
+            } else {
+                unbalance--;
+                assert(unbalance >= 0);
+            }
+        }
+    }
+    assert(unbalance == 0);
+    return t;
+}
+
+// cf. get_next_tokenlist
+halfword cmd_chr_from_tok(halfword tok, halfword *cmd) {
+    if (tok >= cs_token_flag) {
+        halfword cs = tok - cs_token_flag;
+        *cmd = eq_type(cs);
+        return equiv(cs);
+    } else {
+        *cmd = token_cmd(tok);
+        return token_chr(tok);
+    }
+}
+
+#define GET_CMD_CHR_FROM_TOK(cmd, chr, tok) halfword cmd, chr = cmd_chr_from_tok(tok, &cmd)
+
+boolean is_outer_cmd(halfword cmd) {
+    return cmd >= outer_call_cmd && cmd != dont_expand_cmd;
+    // feel weird, but cf. get_next_tokenlist
+}
+
+boolean is_alignment_end_cmd(halfword cmd) {
+    return cmd == tab_mark_cmd || cmd == car_ret_cmd;
+    // cf. get_next
+}
+
+tl tl_clone(tl t) {
+    tl u = tl_alloc();
+    int len = arrlen(t->data);
+    arrsetlen(u->data, len);
+    memcpy(u->data, t->data, sizeof(halfword) * len);
+    u->has_outer = t->has_outer;
+    u->has_outer_era = t->has_outer_era;
+    u->has_par = t->has_par;
+    u->has_par_era = t->has_par_era;
+    return u;
+}
+
+boolean tl_is_valid(tl t) {
+    return t != NULL && t != &tl_data_anchor;
+}
+
+void tl_free(tl t) {
+    assert(tl_is_valid(t));
+    arrfree(t->data);
+    t->prev->next = t->next;
+    t->next->prev = t->prev;
+    free(t);
+}
+
+void tl_show(tl t, int l) {
+    show_flat_token_list(t->data, t->data + arrlen(t->data), l);
+}
+
+halfword tl_suffix_pop_front(tl_suffix t) {
+    assert(tl_is_valid(t->data));
+    assert(t->index < arrlen(t->data->data));
+    halfword tok = t->data->data[t->index++];
+    if (is_left_or_right_brace(tok)) {
+        if (is_left_brace(tok)) {
+            t->unbalance++;
+        } else {
+            t->unbalance--;
+        }
+    }
+    return tok;
+}
+
+void tl_append(tl t, halfword tok) {
+    assert(tl_is_valid(t));
+    arrput(t->data, tok);
+    GET_CMD_CHR_FROM_TOK(cmd, chr, tok);
+    if (is_outer_cmd(cmd)) {
+        t->has_outer = true;
+    }
+    if (tok == par_token) {
+        t->has_par = true;
+    }
+}
+
+/*tex
+
+    This function is called to ensure that |t| has the correct value of
+    |has_outer| and |has_par|.
+
+*/
+void tl_refresh_era(tl t) {
+    if (t->has_outer_era != has_outer_era) {
+        t->has_outer_era = has_outer_era;
+        t->has_outer = false;
+        for (int i = 0; i < arrlen(t->data); i++) {
+            GET_CMD_CHR_FROM_TOK(cmd, chr, t->data[i]);
+            if (is_outer_cmd(cmd)) {
+                t->has_outer = true;
+                break;
+            }
+        }
+    }
+    if (t->has_par_era != has_par_era) {
+        t->has_par_era = has_par_era;
+        t->has_par = false;
+        for (int i = 0; i < arrlen(t->data); i++) {
+            if (t->data[i] == par_token) {
+                t->has_par = true;
+                break;
+            }
+        }
+    }
+}
+
+void tl_extend(tl t, tl u) {
+    assert(tl_is_valid(t));
+    assert(tl_is_valid(u));
+    assert(t != u);
+    memcpy(arraddnptr(t->data, arrlen(u->data)), u->data, sizeof(halfword) * arrlen(u->data));
+    tl_refresh_era(t);
+    tl_refresh_era(u);
+    t->has_outer |= u->has_outer;
+    t->has_par |= u->has_par;
+}
+
+#define FOREACH_TL(t) for (tl t = tl_data_anchor.next; t != &tl_data_anchor; t = t->next)
+
+/*tex This function must be called every time a new token becomes outer. */
+void tl_reset_outer(void) {
+    has_outer_era++;
+}
+
+/*tex This function must be called every time |\partokenname| is called. */
+void tl_reset_par(void) {
+    has_par_era++;
+}

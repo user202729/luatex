@@ -620,6 +620,7 @@ static void run_par_token (void) {
     if (cur_cs > 0) {
         par_loc = cur_cs;
         par_token = cur_tok;
+        tl_reset_par();
     }
 }
 
@@ -2696,6 +2697,8 @@ void prefixed_command(void)
     mathcodeval mval;           /* for handling of \.{\\mathchardef}s */
     a = 0;
     while (cur_cmd == prefix_cmd) {
+        if (cur_chr == 2)
+            tl_reset_outer();
         if (!odd(a / cur_chr))
             a = a + cur_chr;
         /*tex

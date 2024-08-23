@@ -527,23 +527,15 @@ In this case, if |t| $<$ |macro|, then it is possible for |p| to be |null|.
 
 */
 
-void begin_token_list_2(halfword p, halfword *flat, halfword *flat_end, quarterword t)
+void begin_token_list(halfword p, quarterword t)
 {
     push_input();
     istate = token_list;
-    if (flat != NULL) {
-        assert(t == flat_token_list);
-        assert(p == null);
-        cur_input.start_ptr_field = flat;
-        cur_input.end_ptr_field = flat_end;
-    } else {
-        assert(t != flat_token_list);
-        istart = p;
-    }
+    assert(t != flat_token_list);
+    assert(t != tl_token_list);
+    istart = p;
     token_type = (unsigned char) t;
-    if (t == flat_token_list) {
-        cur_input.loc_ptr_field = flat;
-    } else if (t >= macro) {
+    if (t >= macro) {
         /*tex The token list starts with a reference count. */
         assert(p != null);
         add_token_ref(p);
@@ -571,16 +563,24 @@ void begin_token_list_2(halfword p, halfword *flat, halfword *flat_end, quarterw
     }
 }
 
-void begin_token_list(halfword p, quarterword t)
-{
-    assert(t != flat_token_list);
-    begin_token_list_2(p, NULL, NULL, t);
-}
-
+/*tex |flat| must be a malloc-ed array of |halfword|s that will be freed when the token list is ended. */
 void begin_flat_token_list(halfword *flat, halfword *flat_end)
 {
-    assert(flat != NULL);
-    begin_token_list_2(null, flat, flat_end, flat_token_list);
+    push_input();
+    istate = token_list;
+    cur_input.start_ptr_field = flat;
+    cur_input.end_ptr_field = flat_end;
+    token_type = flat_token_list;
+    cur_input.loc_ptr_field = flat;
+}
+
+/*tex Takes ownership of |t|. */
+void begin_tl_token_list(tl t)
+{
+    push_input();
+    istate = token_list;
+    cur_input.tl_field = tl_suffix_from_tl(t);
+    token_type = tl_token_list;
 }
 
 /*tex

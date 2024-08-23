@@ -44,4 +44,23 @@ extern char *cur_file_name;
 
 #  include "luatex-common.h"
 
+/* Token list data structure. */
+typedef struct tl_data *tl;
+
+tl tl_alloc(void);
+tl tl_clone(tl t);
+void tl_free(tl t);
+void tl_show(tl t, int l);
+tl tl_from_balanced_array(halfword *data);
+halfword tl_pop_front(tl t);
+void tl_append(tl t, halfword tok);
+void tl_extend(tl t, tl u);
+size_t tl_len(tl t);
+void tl_reset_outer(void);
+void tl_reset_par(void);
+
+typedef struct tl_suffix_data *tl_suffix;
+tl_suffix tl_suffix_from_tl(tl t);
+halfword tl_suffix_pop_front(tl_suffix t);
+
 #endif                          /* UTILS_H */
