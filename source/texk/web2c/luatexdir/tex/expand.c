@@ -692,7 +692,7 @@ void macro_call(void)
                 match_chr = token_info(r) - match_token;
                 s = token_link(r);
                 r = s;
-                p = NULL;
+                assert(p == NULL);
                 m = 0;
             }
             /*tex
@@ -880,9 +880,10 @@ void macro_call(void)
                     must strip off the enclosing braces.
 
                 */
-                if ((m == 1) && (p != NULL) && (arrlast(p) < right_brace_limit)) {
+                if ((m == 1) && (arrlen(p) != 0) && (arrlast(p) < right_brace_limit)) {
                     assert(is_left_brace(p[0]));
                     assert(is_right_brace(arrlast(p)));
+                    assert(arrlen(p) >= 2);
                     arrdel(p, 0);
                     arrpop(p);
                 }
@@ -950,11 +951,13 @@ void macro_call(void)
 
     if (tl_len(data)) {
         begin_tl_token_list(data);
+    } else {
+        tl_free(data);
     }
 
     iname = warning_index;
     for (m = 0; m <= n - 1; m++)
-        arrfree(pstack[m]);
+        tl_free(pstack[m]);
     goto EXIT;
   RUNAWAY:
     /*tex

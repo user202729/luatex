@@ -308,7 +308,11 @@ corresponding token types must precede |write_text|.
 /* is the current token list fully read? Originally this is just iloc == null but flat_token_list complicates things */
 #  define token_list_ended ( \
         assert(istate == token_list), \
-        token_type == flat_token_list ? (cur_input.loc_ptr_field == cur_input.end_ptr_field) : (iloc == null) \
+        token_type == flat_token_list ? \
+            cur_input.loc_ptr_field == cur_input.end_ptr_field : \
+        token_type == tl_token_list ? \
+            tl_suffix_is_empty(cur_input.tl_field) : \
+        (iloc == null) \
         )
 
 typedef enum {

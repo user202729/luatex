@@ -596,6 +596,8 @@ void end_token_list(void)
     /*tex Leave a token-list input level: */
     if (token_type == flat_token_list) {
         free(cur_input.start_ptr_field);
+    } else if (token_type == tl_token_list) {
+        tl_suffix_free(cur_input.tl_field);
     } else if (token_type >= backed_up) {
         /*tex The token list to be deleted: */
         if (token_type <= inserted) {

@@ -539,31 +539,19 @@ int has_outer_era;
 int has_par_era;
 
 struct tl_data {
-    halfword *data;      // stb_ds array, solely owned by this token list (note that token list cannot be copied safely)
+    halfword *data;      // stb_ds array, solely owned by this token list (note that token list cannot be copied safely, but it can be moved safely --- moving is allowed because |tl_suffix_from_tl| requires that)
                           // technically this is double indirection, but hopefully it doesn't kill performance too much
 
     boolean has_outer;
     int has_outer_era;
     boolean has_par;
     int has_par_era;
-
-    tl prev, next;        // linked list to allow iterating through all token lists
 };
 
 struct tl_suffix_data {
-    tl_data data;
+    struct tl_data data;
     int index;            // index of the current token
     int unbalance;        // unbalance("{}") = 0, unbalance("}") = 1, cannot represent "{" or "}{"
-};
-
-struct tl_data tl_data_anchor = {
-    .data = NULL,
-    .has_outer = false,
-    .has_outer_era = 0,
-    .has_par = false,
-    .has_par_era = 0,
-    .prev = &tl_data_anchor,
-    .next = &tl_data_anchor,
 };
 
 #include "stb_ds.h"
@@ -574,10 +562,6 @@ void tl_construct(tl t) {
     t->has_outer_era = has_outer_era;
     t->has_par = false;
     t->has_par_era = has_par_era;
-    t->prev = &tl_data_anchor;
-    t->next = tl_data_anchor.next;
-    tl_data_anchor.next->prev = t;
-    tl_data_anchor.next = t;
 }
 
 tl tl_alloc(void) {
@@ -597,6 +581,30 @@ tl_suffix tl_suffix_from_tl(tl t) {
 
 size_t tl_len(tl t) {
     return arrlen(t->data);
+}
+
+// cf. get_next_tokenlist
+halfword cmd_chr_from_tok(halfword tok, halfword *cmd) {
+    if (tok >= cs_token_flag) {
+        halfword cs = tok - cs_token_flag;
+        *cmd = eq_type(cs);
+        return equiv(cs);
+    } else {
+        *cmd = token_cmd(tok);
+        return token_chr(tok);
+    }
+}
+
+#define GET_CMD_CHR_FROM_TOK(cmd, chr, tok) halfword cmd, chr = cmd_chr_from_tok(tok, &cmd)
+
+boolean is_outer_cmd(halfword cmd) {
+    return cmd >= outer_call_cmd && cmd != dont_expand_cmd;
+    // feel weird, but cf. get_next_tokenlist
+}
+
+boolean is_alignment_end_cmd(halfword cmd) {
+    return cmd == tab_mark_cmd || cmd == car_ret_cmd;
+    // cf. get_next
 }
 
 /*tex
@@ -631,30 +639,6 @@ tl tl_from_balanced_array(halfword *data) {
     return t;
 }
 
-// cf. get_next_tokenlist
-halfword cmd_chr_from_tok(halfword tok, halfword *cmd) {
-    if (tok >= cs_token_flag) {
-        halfword cs = tok - cs_token_flag;
-        *cmd = eq_type(cs);
-        return equiv(cs);
-    } else {
-        *cmd = token_cmd(tok);
-        return token_chr(tok);
-    }
-}
-
-#define GET_CMD_CHR_FROM_TOK(cmd, chr, tok) halfword cmd, chr = cmd_chr_from_tok(tok, &cmd)
-
-boolean is_outer_cmd(halfword cmd) {
-    return cmd >= outer_call_cmd && cmd != dont_expand_cmd;
-    // feel weird, but cf. get_next_tokenlist
-}
-
-boolean is_alignment_end_cmd(halfword cmd) {
-    return cmd == tab_mark_cmd || cmd == car_ret_cmd;
-    // cf. get_next
-}
-
 tl tl_clone(tl t) {
     tl u = tl_alloc();
     int len = arrlen(t->data);
@@ -668,25 +652,27 @@ tl tl_clone(tl t) {
 }
 
 boolean tl_is_valid(tl t) {
-    return t != NULL && t != &tl_data_anchor;
+    return t != NULL;
+}
+
+void tl_destruct(tl t) {
+    assert(tl_is_valid(t));
+    arrfree(t->data);
 }
 
 void tl_free(tl t) {
-    assert(tl_is_valid(t));
-    arrfree(t->data);
-    t->prev->next = t->next;
-    t->next->prev = t->prev;
+    tl_destruct(t);
     free(t);
 }
 
 void tl_show(tl t, int l) {
-    show_flat_token_list(t->data, t->data + arrlen(t->data), l);
+    show_flat_token_list(t->data, NULL, t->data + arrlen(t->data), l);
 }
 
 halfword tl_suffix_pop_front(tl_suffix t) {
-    assert(tl_is_valid(t->data));
-    assert(t->index < arrlen(t->data->data));
-    halfword tok = t->data->data[t->index++];
+    assert(tl_is_valid(&t->data));
+    assert(t->index < arrlen(t->data.data));
+    halfword tok = t->data.data[t->index++];
     if (is_left_or_right_brace(tok)) {
         if (is_left_brace(tok)) {
             t->unbalance++;
@@ -695,6 +681,10 @@ halfword tl_suffix_pop_front(tl_suffix t) {
         }
     }
     return tok;
+}
+
+boolean tl_suffix_is_empty(tl_suffix t) {
+    return t->index == tl_len(&t->data);
 }
 
 void tl_append(tl t, halfword tok) {
@@ -750,8 +740,6 @@ void tl_extend(tl t, tl u) {
     t->has_par |= u->has_par;
 }
 
-#define FOREACH_TL(t) for (tl t = tl_data_anchor.next; t != &tl_data_anchor; t = t->next)
-
 /*tex This function must be called every time a new token becomes outer. */
 void tl_reset_outer(void) {
     has_outer_era++;
@@ -760,4 +748,13 @@ void tl_reset_outer(void) {
 /*tex This function must be called every time |\partokenname| is called. */
 void tl_reset_par(void) {
     has_par_era++;
+}
+
+void tl_suffix_destruct(tl_suffix t) {
+    tl_destruct(&t->data);
+}
+
+void tl_suffix_free(tl_suffix t) {
+    tl_suffix_destruct(t);
+    free(t);
 }

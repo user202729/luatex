@@ -2030,6 +2030,8 @@ static boolean get_next_tokenlist(void)
         assert(cur_input.loc_ptr_field < cur_input.end_ptr_field);
         t = *cur_input.loc_ptr_field;
         ++cur_input.loc_ptr_field;
+    } else if (token_type == tl_token_list) {
+        t = tl_suffix_pop_front(cur_input.tl_field);
     } else {
         t = token_info(iloc);
         /*tex Move to next. */
