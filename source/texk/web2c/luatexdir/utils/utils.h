@@ -52,10 +52,11 @@ tl tl_clone(tl t);
 void tl_free(tl t);
 void tl_show(tl t, int l);
 tl tl_from_balanced_array(halfword *data);
-halfword tl_pop_front(tl t);
 void tl_append(tl t, halfword tok);
 void tl_extend(tl t, tl u);
 size_t tl_len(tl t);
+halfword tl_last(tl t);
+void tl_remove_outer_braces(tl t);
 void tl_reset_outer(void);
 void tl_reset_par(void);
 

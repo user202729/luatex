@@ -625,7 +625,7 @@ void macro_call(void)
     /*tex current node in the macro's token list */
     halfword r;
     /*tex parameter token list being built */
-    halfword *p = NULL;
+    tl p = NULL;
     /*tex backup pointer for parameter matching */
     halfword s;
     /*tex cycle pointer for backup recovery */
@@ -693,6 +693,7 @@ void macro_call(void)
                 s = token_link(r);
                 r = s;
                 assert(p == NULL);
+                p = tl_alloc();
                 m = 0;
             }
             /*tex
@@ -776,7 +777,7 @@ void macro_call(void)
                 } else {
                     t = s;
                     do {
-                        arrpush(p, token_info(t));
+                        tl_append(p, token_info(t));
                         incr(m);
                         u = token_link(t);
                         v = s;
@@ -813,7 +814,7 @@ void macro_call(void)
                     /*tex Cache this. We know nothing like |initialize_commands| or |\partokenname| can be run during this tight loop. */
                     halfword par_token_cache = par_token;
                     while (1) {
-                        arrpush(p, cur_tok);
+                        tl_append(p, cur_tok);
                         get_token();
                         if (cur_tok == par_token_cache) {
                             if (long_state != long_call_cmd) {
@@ -833,7 +834,7 @@ void macro_call(void)
                             }
                         }
                     }
-                    arrpush(p, cur_tok);
+                    tl_append(p, cur_tok);
                 } else {
                     /*tex Report an extra right brace and |goto continue|. */
                     back_input();
@@ -864,7 +865,7 @@ void macro_call(void)
                 */
                 if (cur_tok == space_token && token_info(r) <= end_match_token && token_info(r) >= match_token)
                     goto CONTINUE;
-                arrpush(p, cur_tok);
+                tl_append(p, cur_tok);
             }
             incr(m);
             if (token_info(r) > end_match_token)
@@ -880,14 +881,10 @@ void macro_call(void)
                     must strip off the enclosing braces.
 
                 */
-                if ((m == 1) && (arrlen(p) != 0) && (arrlast(p) < right_brace_limit)) {
-                    assert(is_left_brace(p[0]));
-                    assert(is_right_brace(arrlast(p)));
-                    assert(arrlen(p) >= 2);
-                    arrdel(p, 0);
-                    arrpop(p);
+                if ((m == 1) && (tl_len(p) != 0) && (tl_last(p) < right_brace_limit)) {
+                    tl_remove_outer_braces(p);
                 }
-                pstack[n] = tl_from_balanced_array(p);
+                pstack[n] = p;
                 p = NULL;
                 incr(n);
                 if (tracing_macros_par > 0) {
@@ -978,11 +975,13 @@ void macro_call(void)
         );
         back_error();
     }
-    pstack[n] = tl_from_balanced_array(p);
+    pstack[n] = p;
+    p = NULL;
     align_state = align_state - unbalance;
     for (m = 0; m <= n; m++)
         arrfree(pstack[m]);
   EXIT:
+    assert(p == NULL);
     scanner_status = save_scanner_status;
     warning_index = save_warning_index;
 }

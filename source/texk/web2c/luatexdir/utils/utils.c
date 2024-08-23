@@ -669,6 +669,21 @@ void tl_show(tl t, int l) {
     show_flat_token_list(t->data, NULL, t->data + arrlen(t->data), l);
 }
 
+halfword tl_last(tl t) {
+    assert(tl_is_valid(t));
+    assert(arrlen(t->data) > 0);
+    return arrlast(t->data);
+}
+
+void tl_remove_outer_braces(tl t) {
+    assert(tl_is_valid(t));
+    assert(tl_len(t) >= 2);
+    assert(is_left_brace(t->data[0]));
+    assert(is_right_brace(tl_last(t)));
+    arrdel(t->data, 0);
+    arrpop(t->data);
+}
+
 halfword tl_suffix_pop_front(tl_suffix t) {
     assert(tl_is_valid(&t->data));
     assert(t->index < arrlen(t->data.data));
