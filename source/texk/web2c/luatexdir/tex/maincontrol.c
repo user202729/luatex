@@ -2690,7 +2690,7 @@ void prefixed_command(void)
 {
     int a;                      /* accumulated prefix codes so far */
     internal_font_number f;     /* identifies a font */
-    halfword j;                 /* index into a \.{\\parshape} specification */
+    halfword j;                 /* index into a \.{\\parshape} specification, or equal to |protected_token| for |\protected| prefix */
     halfword p, q;              /* for temporary short-term use */
     int n;                      /* ditto */
     boolean e, check_glue;      /* should a definition be expanded? or was \.{\\let} not done? */

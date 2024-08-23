@@ -230,6 +230,7 @@ typedef enum {
     shape_ref_cmd,                        /* the equivalent points to a parshape specification */
     box_ref_cmd,                          /* the equivalent points to a box node, or is |null| */
     data_cmd,                             /* the equivalent is simply a halfword number */
+    flat_call_cmd,
 } tex_command_code;
 
 #  define max_command_cmd set_font_id_cmd /* the largest command code seen at |big_switch| */

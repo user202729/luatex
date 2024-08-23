@@ -618,37 +618,56 @@ int long_state;
 
 /*tex This invokes a user-defined control sequence. */
 
-void macro_call(void)
+/*
+
+   The following function is templated over the type of the iterator.
+   As such, the caller must preallocate 6 iterators and pass their addresses to the function,
+   as well as the functions that operate on them.
+
+*/
+
+void macro_call_generic(
+        /*tex start of the token list */
+        void * const ref_count,
+        /*tex current node in the macro's token list */
+        void * const r,
+        /*tex backup pointer for parameter matching */
+        void * const s,
+        /*tex cycle pointer for backup recovery */
+        void * const t,
+        /*tex auxiliary pointers for backup recovery */
+        void * const u, void * const v,
+        void * const null_iter,
+        void (*iter_copy)(void *, void *),
+        void (*iter_show)(void *),
+        halfword (*iter_info)(void *),
+        /*tex set the first argument to the link of the second */
+        void (*iter_link)(void *, void *),
+        boolean (*iter_eq)(void *, void *)
+        )
 {
     /*tex The arguments supplied to a macro: */
     tl pstack[9];
-    /*tex current node in the macro's token list */
-    halfword r;
     /*tex parameter token list being built */
     tl p = NULL;
-    /*tex backup pointer for parameter matching */
-    halfword s;
-    /*tex cycle pointer for backup recovery */
-    halfword t;
-    /*tex auxiliary pointers for backup recovery */
-    halfword u, v;
     /*tex the number of parameters scanned */
     int n = 0;
     /*tex unmatched left braces in current parameter */
     halfword unbalance;
     /*tex the number of tokens or groups (usually) */
     halfword m = 0;
-    /*tex start of the token list */
-    halfword ref_count;
     /*tex |scanner_status| upon entry */
     int save_scanner_status = scanner_status;
     /*tex |warning_index| upon entry */
     halfword save_warning_index = warning_index;
     /*tex character used in parameter */
     int match_chr = 0;
+
     warning_index = cur_cs;
-    ref_count = cur_chr;
-    r = token_link(ref_count);
+    assert(cur_cmd == call_cmd || cur_cmd == long_call_cmd || cur_cmd == outer_call_cmd || cur_cmd == long_outer_call_cmd || cur_cmd == flat_call_cmd);
+
+    iter_link(r, ref_count);
+
     if (tracing_macros_par > 0) {
         /*tex Show the text of the macro being expanded. */
         begin_diagnostic();
@@ -656,12 +675,12 @@ void macro_call(void)
            print_ln(); /* also see newlines in print_input_level */
         print_input_level();
         print_cs(warning_index);
-        token_show(ref_count);
+        iter_show(ref_count);
         end_diagnostic(false);
     }
-    if (token_info(r) == protected_token)
-        r = token_link(r);
-    if (token_info(r) != end_match_token) {
+    if (iter_info(r) == protected_token)
+        iter_link(r, r);
+    if (iter_info(r) != end_match_token) {
         /*tex
 
             Scan the parameters and make |link(r)| point to the macro body; but
@@ -685,13 +704,13 @@ void macro_call(void)
         if (long_state >= outer_call_cmd)
             long_state = long_state - 2;
         do {
-            if ((token_info(r) >= end_match_token)
-                || (token_info(r) < match_token)) {
-                s = null;
+            if ((iter_info(r) >= end_match_token)
+                || (iter_info(r) < match_token)) {
+                iter_copy(s, null_iter);
             } else {
-                match_chr = token_info(r) - match_token;
-                s = token_link(r);
-                r = s;
+                match_chr = iter_info(r) - match_token;
+                iter_link(s, r);
+                iter_copy(r, s);
                 assert(p == NULL);
                 p = tl_alloc();
                 m = 0;
@@ -711,7 +730,7 @@ void macro_call(void)
           CONTINUE:
             /*tex Set |cur_tok| to the next token of input: */
             get_token();
-            if (cur_tok == token_info(r)) {
+            if (cur_tok == iter_info(r)) {
                 /*tex
 
                     Advance |r|; |goto found| if the parameter delimiter has been
@@ -724,9 +743,9 @@ void macro_call(void)
                     will be scanned, so we must make a correction.
 
                 */
-                r = token_link(r);
-                if ((token_info(r) >= match_token)
-                    && (token_info(r) <= end_match_token)) {
+                iter_link(r, r);
+                if ((iter_info(r) >= match_token)
+                    && (iter_info(r) <= end_match_token)) {
                     if (cur_tok < left_brace_limit)
                         decr(align_state);
                     goto FOUND;
@@ -759,8 +778,8 @@ void macro_call(void)
                 \.{\\par}, so \TeX\ keeps quiet about this bending of the rules.
 
             */
-            if (s != r) {
-                if (s == null) {
+            if (!iter_eq(s, r)) {
+                if (iter_eq(s, null_iter)) {
                     /*tex Report an improper use of the macro and abort. */
                     print_err("Use of ");
                     sprint_cs(warning_index);
@@ -775,30 +794,30 @@ void macro_call(void)
                     goto EXIT;
 
                 } else {
-                    t = s;
+                    iter_copy(t, s);
                     do {
-                        tl_append(p, token_info(t));
+                        tl_append(p, iter_info(t));
                         incr(m);
-                        u = token_link(t);
-                        v = s;
+                        iter_link(u, t);
+                        iter_copy(v, s);
                         while (1) {
-                            if (u == r) {
-                                if (cur_tok != token_info(v)) {
+                            if (iter_eq(u, r)) {
+                                if (cur_tok != iter_info(v)) {
                                     goto DONE;
                                 } else {
-                                    r = token_link(v);
+                                    iter_link(r, v);
                                     goto CONTINUE;
                                 }
                             }
-                            if (token_info(u) != token_info(v))
+                            if (iter_info(u) != iter_info(v))
                                 goto DONE;
-                            u = token_link(u);
-                            v = token_link(v);
+                            iter_link(u, u);
+                            iter_link(v, v);
                         }
                       DONE:
-                        t = token_link(t);
-                    } while (t != r);
-                    r = s;
+                        iter_link(t, t);
+                    } while (!iter_eq(t, r));
+                    iter_copy(r, s);
                     /*tex At this point, no tokens are recently matched. */
                 }
             }
@@ -890,17 +909,17 @@ void macro_call(void)
                     space that would become an undelimited parameter.
 
                 */
-                if (cur_tok == space_token && token_info(r) <= end_match_token && token_info(r) >= match_token)
+                if (cur_tok == space_token && iter_info(r) <= end_match_token && iter_info(r) >= match_token)
                     goto CONTINUE;
                 tl_append(p, cur_tok);
             }
             incr(m);
-            if (token_info(r) > end_match_token)
+            if (iter_info(r) > end_match_token)
                 goto CONTINUE;
-            if (token_info(r) < match_token)
+            if (iter_info(r) < match_token)
                 goto CONTINUE;
           FOUND:
-            if (s != null) {
+            if (!iter_eq(s, null_iter)) {
                 /*
 
                     Tidy up the parameter just scanned, and tuck it away. If the
@@ -931,7 +950,7 @@ void macro_call(void)
                 |end_match|.
 
             */
-        } while (token_info(r) != end_match_token);
+        } while (iter_info(r) != end_match_token);
     }
     /*tex
 
@@ -949,11 +968,11 @@ void macro_call(void)
     /*tex Copy the expanded macro content from |r| to |data|, substituting parameter values as needed. */
     tl data = tl_alloc();
 
-    assert(token_info(r) == end_match_token);
+    assert(iter_info(r) == end_match_token);
     {
-        pointer s = token_link(r);
-        while (s != null) {
-            halfword t = token_info(s);
+        iter_link(s, r);
+        while (!iter_eq(s, null_iter)) {
+            halfword t = iter_info(s);
             if (t < cs_token_flag && token_cmd(t) == out_param_cmd) {  // ref get_next_tokenlist
                 /*tex Insert macro parameter. */
                 unsigned m = token_chr(t) - 1;
@@ -969,7 +988,7 @@ void macro_call(void)
             } else {
                 tl_append(data, t);
             }
-            s = token_link(s);
+            iter_link(s, s);
         }
     }
 
@@ -1011,4 +1030,91 @@ void macro_call(void)
     assert(p == NULL);
     scanner_status = save_scanner_status;
     warning_index = save_warning_index;
+}
+
+/*
+
+   The memory layout is as follows.
+
+Classic:
+
+    eqtb[cs] -> fixmem[ref_count] -> fixmem[r] -> ...
+    eqtb[cs2] ---^
+
+Flat:
+
+    eqtb[cs] -> fixmem[]
+    eqtb[cs2] -> fixmem[]
+
+*/
+
+void macro_call_flat(void)
+{
+    halfword *ref_count;
+    memcpy(&ref_count, &fixmem[cur_chr], sizeof(ref_count));
+}
+
+void iter_copy_classic(void *a, void *b)
+{
+    halfword *aa = a;
+    halfword *bb = b;
+    *aa = *bb;
+}
+
+void iter_show_classic(void *a)
+{
+    halfword *aa = a;
+    token_show(*aa);
+}
+
+halfword iter_info_classic(void *a)
+{
+    halfword *aa = a;
+    assert(*aa != null);
+    return token_info(*aa);
+}
+
+void iter_link_classic(void *a, void *b)
+{
+    halfword *aa = a;
+    halfword *bb = b;
+    assert(*bb != null);
+    *aa = token_link(*bb);
+}
+
+boolean iter_eq_classic(void *a, void *b)
+{
+    halfword *aa = a;
+    halfword *bb = b;
+    return *aa == *bb;
+}
+
+void macro_call_classic(void)
+{
+    halfword ref_count = cur_chr;
+    halfword r, s, t, u, v;
+    halfword null_ = null;
+    macro_call_generic(
+        &ref_count,
+        &r,
+        &s,
+        &t,
+        &u,
+        &v,
+        &null_,
+        iter_copy_classic,
+        iter_show_classic,
+        iter_info_classic,
+        iter_link_classic,
+        iter_eq_classic
+    );
+}
+
+void macro_call(void)
+{
+    if (cur_cmd == flat_call_cmd) {
+        macro_call_flat();
+    } else {
+        macro_call_classic();
+    }
 }

@@ -380,6 +380,9 @@ void print_meaning(void)
         case lua_local_call_cmd: \
             p("[internal local lua function call]"); \
             break; \
+        case flat_call_cmd: \
+            p("[flat call]"); \
+            break; \
         default: \
             p("BAD"); \
             break; \
