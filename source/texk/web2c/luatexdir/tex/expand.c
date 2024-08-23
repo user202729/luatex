@@ -815,6 +815,30 @@ void macro_call(void)
                     halfword par_token_cache = par_token;
                     while (1) {
                         tl_append(p, cur_tok);
+
+                        while (1) {
+                            if (istate != token_list) {
+                                break;
+                            }
+                            if (token_list_ended) {
+                                end_token_list();
+                                continue;
+                            }
+                            if (token_type != tl_token_list ||
+                                    tl_suffix_has_outer(cur_input.tl_field) ||
+                                    (long_state != long_call_cmd && tl_suffix_has_par(cur_input.tl_field))
+                               ) {
+                                break;
+                            }
+                            /*tex Optimization. */
+                            tl piece = tl_suffix_pop_front_balanced(cur_input.tl_field);
+                            if (!piece) {
+                                break;
+                            }
+                            tl_extend(p, piece);
+                            tl_free(piece);
+                        }
+
                         get_token();
                         if (cur_tok == par_token_cache) {
                             if (long_state != long_call_cmd) {

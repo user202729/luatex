@@ -570,15 +570,6 @@ tl tl_alloc(void) {
     return t;
 }
 
-/* Takes ownership of |t|. */
-tl_suffix tl_suffix_from_tl(tl t) {
-    tl_suffix s = malloc(sizeof(struct tl_suffix_data));
-    s->data = *t;
-    s->index = 0;
-    s->unbalance = 0;
-    return s;
-}
-
 size_t tl_len(tl t) {
     return arrlen(t->data);
 }
@@ -651,6 +642,14 @@ tl tl_clone(tl t) {
     return u;
 }
 
+/*tex |t| is left in a valid state. */
+tl tl_move(tl t) {
+    tl u = malloc(sizeof(struct tl_data));
+    *u = *t;
+    t->data = NULL;
+    return u;
+}
+
 boolean tl_is_valid(tl t) {
     return t != NULL;
 }
@@ -682,24 +681,6 @@ void tl_remove_outer_braces(tl t) {
     assert(is_right_brace(tl_last(t)));
     arrdel(t->data, 0);
     arrpop(t->data);
-}
-
-halfword tl_suffix_pop_front(tl_suffix t) {
-    assert(tl_is_valid(&t->data));
-    assert(t->index < arrlen(t->data.data));
-    halfword tok = t->data.data[t->index++];
-    if (is_left_or_right_brace(tok)) {
-        if (is_left_brace(tok)) {
-            t->unbalance++;
-        } else {
-            t->unbalance--;
-        }
-    }
-    return tok;
-}
-
-boolean tl_suffix_is_empty(tl_suffix t) {
-    return t->index == tl_len(&t->data);
 }
 
 void tl_append(tl t, halfword tok) {
@@ -763,6 +744,101 @@ void tl_reset_outer(void) {
 /*tex This function must be called every time |\partokenname| is called. */
 void tl_reset_par(void) {
     has_par_era++;
+}
+
+void tl_suffix_show(tl_suffix t, int l) {
+    show_flat_token_list(t->data.data, t->data.data + t->index, t->data.data + arrlen(t->data.data), l);
+}
+
+/* Takes ownership of |t|. */
+tl_suffix tl_suffix_from_tl(tl t) {
+    tl_suffix s = malloc(sizeof(struct tl_suffix_data));
+    s->data = *t;
+    s->index = 0;
+    s->unbalance = 0;
+    return s;
+}
+
+halfword tl_suffix_pop_front(tl_suffix t) {
+    assert(tl_is_valid(&t->data));
+    assert(t->index < arrlen(t->data.data));
+    halfword tok = t->data.data[t->index++];
+    if (is_left_or_right_brace(tok)) {
+        if (is_left_brace(tok)) {
+            t->unbalance++;
+        } else {
+            t->unbalance--;
+        }
+    }
+    return tok;
+}
+
+boolean tl_suffix_is_empty(tl_suffix t) {
+    return t->index == tl_len(&t->data);
+}
+
+/*tex it's okay to return true when there isn't, but it's not okay to return false when there is */
+boolean tl_suffix_has_outer(tl_suffix t) {
+    tl_refresh_era(&t->data);
+    return t->data.has_outer;
+}
+
+boolean tl_suffix_has_par(tl_suffix t) {
+    tl_refresh_era(&t->data);
+    return t->data.has_par;
+}
+
+tl tl_suffix_pop_front_balanced(tl_suffix t) {
+    if (!(t->data.has_outer_era == has_outer_era && !t->data.has_outer &&
+                t->data.has_par_era == has_par_era && !t->data.has_par)) {
+        return NULL;
+    }
+
+    if (t->unbalance != 0) {
+        /*tex Cannot do $O(1)$ with the current implementation, need to iterate over the data. */
+        int unbalance = 0;
+        halfword *p = t->data.data + t->index;
+        while (1) {
+            halfword tok = *p;
+            if (is_left_or_right_brace(tok)) {
+                if (is_left_brace(tok)) {
+                    unbalance++;
+                } else {
+                    unbalance--;
+                }
+            }
+            if (unbalance < 0) {
+                break;
+            }
+            p++;
+        }
+        size_t len = p - t->data.data - t->index;
+        if (len == 0) {
+            return NULL;
+        }
+        tl r = tl_alloc();
+        memcpy(arraddnptr(r->data, len), t->data.data + t->index, sizeof(halfword) * len);
+        t->index += len;
+        return r;
+    }
+
+    if (t->index == 0) {
+        /*tex
+
+            Special optimization, $O(1)$ is possible.
+            Destroys the |tl_data| owned by |t|.
+
+        */
+        return tl_move(&t->data);
+    }
+    /*tex Copy the suffix over. */
+    tl r = tl_alloc();
+    assert(r->data == NULL);
+    size_t len = arrlen(t->data.data) - t->index;
+    memcpy(arraddnptr(r->data, len), t->data.data + t->index, sizeof(halfword) * len);
+    t->index = 0;
+    arrfree(t->data.data);
+    return r;
 }
 
 void tl_suffix_destruct(tl_suffix t) {

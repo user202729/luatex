@@ -63,7 +63,16 @@ void tl_reset_par(void);
 typedef struct tl_suffix_data *tl_suffix;
 tl_suffix tl_suffix_from_tl(tl t);
 boolean tl_suffix_is_empty(tl_suffix t);
+void tl_suffix_show(tl_suffix t, int l);
+
+/*tex it's okay to return true when there isn't, but it's not okay to return false when there is */
+boolean tl_suffix_has_outer(tl_suffix t);
+boolean tl_suffix_has_par(tl_suffix t);
+
 halfword tl_suffix_pop_front(tl_suffix t);
 void tl_suffix_free(tl_suffix t);
+
+/*tex This function might return NULL if it is inefficient to actually compute the result. */
+tl tl_suffix_pop_front_balanced(tl_suffix t);
 
 #endif                          /* UTILS_H */

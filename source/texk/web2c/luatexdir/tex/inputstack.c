@@ -429,6 +429,8 @@ void show_context(void)
                     begin_pseudoprint();
                     if (token_type == flat_token_list) {
                         show_flat_token_list(cur_input.start_ptr_field, cur_input.loc_ptr_field, cur_input.end_ptr_field, 100000);
+                    } else if (token_type == tl_token_list) {
+                        tl_suffix_show(cur_input.tl_field, 100000);
                     } else if (token_type < macro) {
                         show_token_list(istart, iloc, 100000);
                     } else {
