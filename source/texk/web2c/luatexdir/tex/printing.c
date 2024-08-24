@@ -143,6 +143,14 @@ void print_ln(void)
             break;
         case log_only:
             wlog_cr();
+
+            file_offset = 0;
+            static int print_ln_count;
+            incr(print_ln_count);
+            tprint("print_ln_count = ");
+            print_int(print_ln_count);
+            wlog_cr();
+
             file_offset = 0;
             break;
         case term_and_log:

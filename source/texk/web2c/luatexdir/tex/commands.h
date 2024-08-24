@@ -231,11 +231,22 @@ typedef enum {
     box_ref_cmd,                          /* the equivalent points to a box node, or is |null| */
     data_cmd,                             /* the equivalent is simply a halfword number */
     flat_call_cmd,
+    long_flat_call_cmd,
+    outer_flat_call_cmd,
+    long_outer_flat_call_cmd,
 } tex_command_code;
 
 #  define max_command_cmd set_font_id_cmd /* the largest command code seen at |big_switch| */
 #  define last_cmd data_cmd
 #  define max_non_prefixed_command last_item_cmd
+
+inline boolean is_flat_cmd(int cmd) {
+    return flat_call_cmd <= cmd && cmd <= long_outer_flat_call_cmd;
+}
+
+inline boolean is_outer_call(int cmd) {
+    return cmd >= outer_call_cmd && cmd != flat_call_cmd && cmd != long_flat_call_cmd;
+}
 
 typedef enum {
     above_code = 0,

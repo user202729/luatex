@@ -295,7 +295,12 @@ void print_meaning(void)
 
     */
     print_cmd_chr((quarterword) cur_cmd, cur_chr);
-    if (cur_cmd >= call_cmd) {
+    if (is_flat_cmd(cur_cmd)) {
+        print_char(':');
+        print_ln();
+        halfword *ref_count = get_flat_value(cur_chr);
+        show_flat_token_list(ref_count + 1, NULL, ref_count + arrlen(ref_count), 10000000);
+    } else if (cur_cmd >= call_cmd) {
         print_char(':');
         print_ln();
         token_show(cur_chr);
@@ -379,9 +384,6 @@ void print_meaning(void)
             break; \
         case lua_local_call_cmd: \
             p("[internal local lua function call]"); \
-            break; \
-        case flat_call_cmd: \
-            p("[flat call]"); \
             break; \
         default: \
             p("BAD"); \
@@ -498,7 +500,7 @@ void show_flat_token_list(halfword *start, halfword *loc, halfword *end, int l)
     /*tex magic pointer, correspond to |q| in |show_token_list| */
     halfword magic;
 
-    if (loc == NULL) {
+    if (loc == NULL || loc == end) {
         magic = null;
     } else {
         assert(start <= loc && loc < end);
@@ -1296,7 +1298,7 @@ static boolean get_next_file(void)
             switch (c-new_line) {
                 case escape_cmd:
                     istate = (unsigned char) scan_control_sequence();
-                    if (! suppress_outer_error_par && cur_cmd >= outer_call_cmd)
+                    if (! suppress_outer_error_par && is_outer_call(cur_cmd))
                         check_outer_validity();
                     return true;
                 case left_brace_cmd:
@@ -1319,7 +1321,7 @@ static boolean get_next_file(void)
                     cur_cs = par_loc;
                     cur_cmd = eq_type(cur_cs);
                     cur_chr = equiv(cur_cs);
-                    if (! suppress_outer_error_par && cur_cmd >= outer_call_cmd)
+                    if (! suppress_outer_error_par && is_outer_call(cur_cmd))
                         check_outer_validity();
                     return true;
                 case mac_param_cmd:
@@ -1351,7 +1353,7 @@ static boolean get_next_file(void)
                     cur_cmd = eq_type(cur_cs);
                     cur_chr = equiv(cur_cs);
                     istate = mid_line;
-                    if (! suppress_outer_error_par && cur_cmd >= outer_call_cmd)
+                    if (! suppress_outer_error_par && is_outer_call(cur_cmd))
                         check_outer_validity();
                     return true;
                 case comment_cmd:
@@ -1370,7 +1372,7 @@ static boolean get_next_file(void)
                 case escape_cmd:
                     /*tex Scan a control sequence. */
                     istate = (unsigned char) scan_control_sequence();
-                    if (! suppress_outer_error_par && cur_cmd >= outer_call_cmd)
+                    if (! suppress_outer_error_par && is_outer_call(cur_cmd))
                         check_outer_validity();
                     return true;
                 case left_brace_cmd:
@@ -1417,7 +1419,7 @@ static boolean get_next_file(void)
                     cur_cmd = eq_type(cur_cs);
                     cur_chr = equiv(cur_cs);
                     istate = mid_line;
-                    if (! suppress_outer_error_par && cur_cmd >= outer_call_cmd)
+                    if (! suppress_outer_error_par && is_outer_call(cur_cmd))
                         check_outer_validity();
                     return true;
                 case comment_cmd:
@@ -1437,7 +1439,7 @@ static boolean get_next_file(void)
             switch (c-mid_line) {
                 case escape_cmd:
                     istate = (unsigned char) scan_control_sequence();
-                    if (! suppress_outer_error_par && cur_cmd >= outer_call_cmd)
+                    if (! suppress_outer_error_par && is_outer_call(cur_cmd))
                         check_outer_validity();
                     return true;
                 case left_brace_cmd:
@@ -1494,7 +1496,7 @@ static boolean get_next_file(void)
                     cur_cmd = eq_type(cur_cs);
                     cur_chr = equiv(cur_cs);
                     istate = mid_line;
-                    if (! suppress_outer_error_par && cur_cmd >= outer_call_cmd)
+                    if (! suppress_outer_error_par && is_outer_call(cur_cmd))
                         check_outer_validity();
                     return true;
                 case comment_cmd:
@@ -2044,7 +2046,7 @@ static boolean get_next_tokenlist(void)
         /*tex A control sequence token */
         cur_cs = t - cs_token_flag;
         cur_cmd = eq_type(cur_cs);
-        if (cur_cmd >= outer_call_cmd) {
+        if (is_outer_call(cur_cmd)) {
             if (cur_cmd == dont_expand_cmd) {
                 /*tex
 
@@ -2063,7 +2065,7 @@ static boolean get_next_tokenlist(void)
                     cur_chr = no_expand_flag;
                     return true;
                 }
-            } else if (! suppress_outer_error_par) {
+            } else if (cur_cmd != flat_call_cmd && cur_cmd != long_flat_call_cmd && ! suppress_outer_error_par) {
                 check_outer_validity();
             }
         }

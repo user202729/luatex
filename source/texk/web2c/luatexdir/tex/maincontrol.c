@@ -22,6 +22,7 @@ with LuaTeX; if not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "ptexlib.h"
+#include "stb_ds.h"
 #include "lua/luatex-api.h"
 
 #define mode     mode_par
@@ -2775,13 +2776,26 @@ void prefixed_command(void)
             get_r_token();
             p = cur_cs;
             q = scan_toks(true, e);
+            assert(q != null);
+            assert(token_link(q) == null);
             if (j != 0) {
                 q = get_avail();
                 set_token_info(q, j);
                 set_token_link(q, token_link(def_ref));
                 set_token_link(def_ref, q);
             }
+
+#if 1
+            /*tex Copy the ref count and the macro definition to a flat array. */
+            assert(token_info(def_ref) == 0); /* reference count */
+            halfword *def = copy_linked_list_to_flat(def_ref);
+            flush_list(token_link(def_ref)); /* keep the first item, will be useful */
+            set_flat_value(def_ref, def);
+            define(p, flat_call_cmd + (a % 4), def_ref);
+#else
             define(p, call_cmd + (a % 4), def_ref);
+#endif
+
             break;
         case let_cmd:
             n = cur_chr;
@@ -2844,7 +2858,10 @@ void prefixed_command(void)
                     confusion("let");
                     break;
             }
-            if (cur_cmd >= call_cmd)
+            if (is_flat_cmd(cur_cmd)) {
+                halfword *ref_count = get_flat_value(cur_chr);
+                incr(*ref_count);
+            } else if (cur_cmd >= call_cmd)
                 add_token_ref(cur_chr);
             define(p, cur_cmd, cur_chr);
             break;

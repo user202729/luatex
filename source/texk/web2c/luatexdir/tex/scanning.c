@@ -2157,7 +2157,7 @@ halfword scan_toks(boolean macro_def, boolean xpand)
             while (1) {
                 get_next();
                 if (cur_cmd >= call_cmd) {
-                    if (token_info(token_link(cur_chr)) == protected_token) {
+                    if (is_flat_cmd(cur_cmd) ? get_flat_value(cur_chr)[1] == protected_token : token_info(token_link(cur_chr)) == protected_token) {
                         cur_cmd = relax_cmd;
                         cur_chr = no_expand_flag;
                     }

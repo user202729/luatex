@@ -22,6 +22,7 @@ with LuaTeX; if not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "ptexlib.h"
+#include "stb_ds.h"
 
 halfword last_cs_name = null_cs;
 
@@ -585,6 +586,22 @@ void eq_destroy(memory_word w)
         case long_outer_call_cmd:
             delete_token_ref(equiv_field(w));
             break;
+        case flat_call_cmd:
+        case long_flat_call_cmd:
+        case outer_flat_call_cmd:
+        case long_outer_flat_call_cmd:
+            {
+                halfword *ref_count = get_flat_value(equiv_field(w));
+
+                if (*ref_count == 0) {
+                    arrfree(ref_count);
+                    token_link(equiv_field(w)) = null;
+                    flush_list(equiv_field(w));
+                } else {
+                    decr(*ref_count);
+                }
+            }
+            break;
         case glue_ref_cmd:
             flush_node(equiv_field(w));
             break;
@@ -1006,7 +1023,12 @@ void show_eqtb(halfword n)
         print_cmd_chr(eq_type(n), equiv(n));
         if (eq_type(n) >= call_cmd) {
             print_char(':');
-            show_token_list(token_link(equiv(n)), null, 32);
+            if (is_flat_cmd(eq_type(n))) {
+                halfword *ref_count = get_flat_value(equiv(n));
+                show_flat_token_list(ref_count + 1, NULL, ref_count + arrlen(ref_count), 32);
+            } else {
+                show_token_list(token_link(equiv(n)), null, 32);
+            }
         }
     } else if (n < local_base) {
         /*tex
@@ -1217,4 +1239,13 @@ void show_eqtb_meaning(halfword n)
         /*tex This can't happen either. */
         print_char('?');
     }
+}
+
+halfword *copy_linked_list_to_flat(halfword p) {
+    halfword *result = NULL;
+    while (p != null) {
+        arrput(result, token_info(p));
+        p = token_link(p);
+    }
+    return result;
 }

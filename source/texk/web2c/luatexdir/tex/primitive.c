@@ -697,6 +697,14 @@ void print_cmd_chr(quarterword cmd, halfword chr_code)
         case undefined_cs_cmd:
             tprint("undefined");
             break;
+        case flat_call_cmd:
+        case long_flat_call_cmd:
+        case outer_flat_call_cmd:
+        case long_outer_flat_call_cmd:
+            n = cmd - flat_call_cmd;
+            if (get_flat_value(chr_code)[1] == protected_token)
+                n = n + 4;
+            goto HANDLE_CALL;
         case call_cmd:
         case long_call_cmd:
         case outer_call_cmd:
@@ -704,6 +712,7 @@ void print_cmd_chr(quarterword cmd, halfword chr_code)
             n = cmd - call_cmd;
             if (token_info(token_link(chr_code)) == protected_token)
                 n = n + 4;
+HANDLE_CALL:
             if (odd(n / 4))
                 tprint_esc("protected");
             if (odd(n))

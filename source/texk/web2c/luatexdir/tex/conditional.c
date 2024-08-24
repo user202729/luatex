@@ -22,6 +22,7 @@ with LuaTeX; if not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "ptexlib.h"
+#include "stb_ds.h"
 
 /*tex
 
@@ -404,10 +405,25 @@ void conditional(void)
             p = cur_cmd;
             q = cur_chr;
             get_next();
-            if (cur_cmd != p) {
+            halfword p_normalized = is_flat_cmd(p) ? p - flat_call_cmd + call_cmd : p;
+            halfword cur_cmd_normalized = is_flat_cmd(cur_cmd) ? cur_cmd - flat_call_cmd + call_cmd : cur_cmd;
+            if (cur_cmd_normalized != p_normalized) {
                 b = false;
-            } else if (cur_cmd < call_cmd) {
+            } else if (cur_cmd_normalized < call_cmd) {
                 b = (cur_chr == q);
+            } else if (is_flat_cmd(cur_cmd) || is_flat_cmd(p)) {
+                halfword *p_data = is_flat_cmd(p) ? get_flat_value(q) : copy_linked_list_to_flat(q);
+                halfword *cur_data = is_flat_cmd(cur_cmd) ? get_flat_value(cur_chr) : copy_linked_list_to_flat(cur_chr);
+                b = p_data == cur_data || (
+                        arrlen(p_data) == arrlen(cur_data) && memcmp(
+                            p_data + 1, cur_data + 1, /*tex Omit reference counts. */
+                            (arrlen(p_data) - 1) * sizeof(halfword)) == 0);
+                if (!is_flat_cmd(p)) {
+                    arrfree(p_data);
+                }
+                if (!is_flat_cmd(cur_cmd)) {
+                    arrfree(cur_data);
+                }
             } else {
                 /*tex
                     Test if two macro texts match. Note also that `\.{\\ifx}'

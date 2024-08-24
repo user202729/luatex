@@ -399,6 +399,21 @@ extern void initialize_equivalents(void);
 #  define eq_type(A) eq_type_field(eqtb[(A)])                           /* command code for equivalent */
 #  define equiv(A) equiv_field(eqtb[(A)])                               /* equivalent value */
 
+/* Return the pointer to a |stb_ds| array containing the macro definition, given a pointer to a |fixmem| address. */
+inline halfword *get_flat_value(halfword p) {
+    halfword *ref_count;
+    memcpy(&ref_count, &fixmem[p], sizeof(ref_count));
+    return ref_count;
+}
+
+inline void set_flat_value(halfword p, halfword *ref_count) {
+    assert(sizeof(fixmem[p]) >= sizeof(ref_count));
+    memcpy(&fixmem[p], &ref_count, sizeof(ref_count));
+}
+
+/*tex Return a |stb_ds| array containing the content of the linked list starting at |p|. */
+extern halfword *copy_linked_list_to_flat(halfword p);
+
 #  define set_eq_level(A,B) eq_level((A)) = (B)
 #  define set_eq_type(A,B) eq_type((A)) = (B)
 #  define set_equiv(A,B) equiv((A)) = (B)

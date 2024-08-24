@@ -359,7 +359,7 @@ void expand(void)
                 error();
                 break;
         }
-    } else if (cur_cmd < end_template_cmd) {
+    } else if (cur_cmd < end_template_cmd || is_flat_cmd(cur_cmd)) {
         macro_call();
     } else {
         /*tex
@@ -491,7 +491,7 @@ void get_x_token(void)
     if (cur_cmd <= max_command_cmd)
         goto DONE;
     if (cur_cmd >= call_cmd) {
-        if (cur_cmd < end_template_cmd) {
+        if (cur_cmd < end_template_cmd || is_flat_cmd(cur_cmd)) {
             macro_call();
         } else {
             cur_cs = frozen_endv;
@@ -626,7 +626,7 @@ int long_state;
 
 */
 
-void macro_call_generic(
+__attribute__((always_inline)) inline void macro_call_generic(
         /*tex start of the token list */
         void * const ref_count,
         /*tex current node in the macro's token list */
@@ -664,7 +664,7 @@ void macro_call_generic(
     int match_chr = 0;
 
     warning_index = cur_cs;
-    assert(cur_cmd == call_cmd || cur_cmd == long_call_cmd || cur_cmd == outer_call_cmd || cur_cmd == long_outer_call_cmd || cur_cmd == flat_call_cmd);
+    assert(cur_cmd == call_cmd || cur_cmd == long_call_cmd || cur_cmd == outer_call_cmd || cur_cmd == long_outer_call_cmd || is_flat_cmd(cur_cmd));
 
     iter_link(r, ref_count);
 
@@ -701,8 +701,13 @@ void macro_call_generic(
         scanner_status = matching;
         unbalance = 0;
         long_state = eq_type(cur_cs);
+        if (long_state >= flat_call_cmd) {
+            assert(is_flat_cmd(long_state));
+            long_state = long_state - flat_call_cmd + call_cmd;
+        }
         if (long_state >= outer_call_cmd)
             long_state = long_state - 2;
+        assert(long_state == call_cmd || long_state == long_call_cmd);
         do {
             if ((iter_info(r) >= end_match_token)
                 || (iter_info(r) < match_token)) {
@@ -1048,12 +1053,6 @@ Flat:
 
 */
 
-void macro_call_flat(void)
-{
-    halfword *ref_count;
-    memcpy(&ref_count, &fixmem[cur_chr], sizeof(ref_count));
-}
-
 void iter_copy_classic(void *a, void *b)
 {
     halfword *aa = a;
@@ -1110,9 +1109,66 @@ void macro_call_classic(void)
     );
 }
 
+void iter_copy_flat(void *a, void *b)
+{
+    halfword **aa = a;
+    halfword **bb = b;
+    *aa = *bb;
+}
+
+void iter_show_flat(void *a)
+{
+    halfword **aa = a;
+    show_flat_token_list(*aa + 1, NULL, *aa + arrlen(*aa), 10000000);
+}
+
+halfword iter_info_flat(void *a)
+{
+    halfword **aa = a;
+    assert(*aa != NULL);
+    return **aa;
+}
+
+void iter_link_flat(void *a, void *b)
+{
+    halfword **aa = a;
+    halfword **bb = b;
+    assert(*bb != NULL);
+    *aa = *bb + 1;
+}
+
+boolean iter_eq_flat(void *a, void *b)
+{
+    halfword **aa = a;
+    halfword **bb = b;
+    return *aa == *bb;
+}
+
+void macro_call_flat(void)
+{
+    halfword *ref_count = get_flat_value(cur_chr);
+    halfword *r, *s, *t, *u, *v;
+    halfword *null_ = ref_count + arrlen(ref_count);
+    macro_call_generic(
+        &ref_count,
+        &r,
+        &s,
+        &t,
+        &u,
+        &v,
+        &null_,
+        iter_copy_flat,
+        iter_show_flat,
+        iter_info_flat,
+        iter_link_flat,
+        iter_eq_flat
+    );
+}
+
 void macro_call(void)
 {
-    if (cur_cmd == flat_call_cmd) {
+    if (flat_call_cmd <= cur_cmd) {
+        assert(is_flat_cmd(cur_cmd));
         macro_call_flat();
     } else {
         macro_call_classic();
