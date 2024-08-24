@@ -754,6 +754,7 @@ void tl_suffix_show(tl_suffix t, int l) {
 tl_suffix tl_suffix_from_tl(tl t) {
     tl_suffix s = malloc(sizeof(struct tl_suffix_data));
     s->data = *t;
+    free(t);  // we must not call |arrfree(t->data)| here
     s->index = 0;
     s->unbalance = 0;
     return s;
