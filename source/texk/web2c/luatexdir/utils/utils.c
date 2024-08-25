@@ -589,7 +589,8 @@ halfword cmd_chr_from_tok(halfword tok, halfword *cmd) {
 #define GET_CMD_CHR_FROM_TOK(cmd, chr, tok) halfword cmd, chr = cmd_chr_from_tok(tok, &cmd)
 
 boolean is_outer_cmd(halfword cmd) {
-    return cmd >= outer_call_cmd && cmd != dont_expand_cmd;
+    return cmd >= outer_call_cmd && cmd != dont_expand_cmd
+        && cmd != flat_call_cmd && cmd != long_flat_call_cmd;
     // feel weird, but cf. get_next_tokenlist
 }
 
