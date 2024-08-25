@@ -22,6 +22,7 @@ with LuaTeX; if not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "ptexlib.h"
+#include "stb_ds.h"
 
 /*tex
 
@@ -60,6 +61,23 @@ previous format they are used for the length of the name of the engine.
 str_number format_ident;
 str_number format_name;
 
+void dump_flat_entry(int j)
+{
+    assert(is_flat_cmd(eq_type(j)));
+    halfword *ref_count = get_flat_value(equiv(j));
+    dump_int(~arrlen(ref_count));
+    dump_things(*ref_count, arrlen(ref_count));
+}
+
+halfword *undump_flat_entry(int x)
+{
+    halfword *ref_count = NULL;
+    int n = ~x;
+    assert(n >= 0);
+    arrsetlen(ref_count, n);
+    undump_things(*ref_count, n);
+    return ref_count;
+}
 
 /*tex
 
@@ -202,7 +220,22 @@ void store_fmt_file(void)
     k = null_cs;
     do {
         j = k;
+        if (is_flat_cmd(eq_type(j))) {
+            /*tex
+                Dump the |eqtb[j]| entry (contains the |fixmem| address) and
+                the memory array.
+                The format is |~n|, |n| halfwords, and |eqtb[j]|.
+            */
+            dump_flat_entry(j);
+            dump_things(eqtb[j], 1);
+            k = j + 1;
+            continue;
+        }
         while (j < int_base - 1) {
+            if (is_flat_cmd(eq_type(j + 1))) {
+                l = j + 1;
+                goto DONE1;
+            }
             if ((equiv(j) == equiv(j + 1)) && (eq_type(j) == eq_type(j + 1)) &&
                 (eq_level(j) == eq_level(j + 1)))
                 goto FOUND1;
@@ -254,6 +287,11 @@ void store_fmt_file(void)
     if (hash_high > 0) {
         /*tex Dump the |hash_extra| part: */
         dump_things(eqtb[eqtb_size + 1], hash_high);
+        for (int i = eqtb_size + 1; i <= eqtb_size + hash_high; i++) {
+            if (is_flat_cmd(eq_type(i))) {
+                dump_flat_entry(i);
+            }
+        }
     }
     dump_int(par_loc);
     dump_int(write_loc);
@@ -471,6 +509,15 @@ boolean load_fmt_file(const char *fmtname)
     k = null_cs;
     do {
         undump_int(x);
+        if (x < 0) {
+            /*tex flat entry. */
+            halfword *ref_count = undump_flat_entry(x);
+            undump_things(eqtb[k], 1);
+            assert(is_flat_cmd(eq_type(k)));
+            set_flat_value(equiv(k), ref_count);
+            k = k + 1;
+            continue;
+        }
         if ((x < 1) || (k + x > eqtb_size + 1))
             goto BAD_FMT;
         undump_things(eqtb[k], x);
@@ -485,6 +532,14 @@ boolean load_fmt_file(const char *fmtname)
     if (hash_high > 0) {
         /*tex undump |hash_extra| part */
         undump_things(eqtb[eqtb_size + 1], hash_high);
+        for (int i = eqtb_size + 1; i <= eqtb_size + hash_high; i++) {
+            if (is_flat_cmd(eq_type(i))) {
+                int x;
+                undump_int(x);
+                halfword *ref_count = undump_flat_entry(x);
+                set_flat_value(equiv(i), ref_count);
+            }
+        }
     }
     undump(hash_base, hash_top, par_loc);
     par_token = cs_token_flag + par_loc;
