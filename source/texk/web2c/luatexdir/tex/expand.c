@@ -975,6 +975,28 @@ __attribute__((always_inline)) inline void macro_call_generic(
 
     assert(iter_info(r) == end_match_token);
     {
+        size_t cap = 0;
+        iter_link(s, r);
+        while (!iter_eq(s, null_iter)) {
+            halfword t = iter_info(s);
+            if (t < cs_token_flag && token_cmd(t) == out_param_cmd) {  // ref get_next_tokenlist
+                /*tex Insert macro parameter. */
+                unsigned m = token_chr(t) - 1;
+                if (m >= n) {
+                    print_err("Too few arguments");
+                    help2(
+                        "It looks like this macro was defined with e.g. \\def\\a#1{#1#2}.",
+                        "This is impossible."
+                    );
+                    error();
+                }
+                cap += tl_len(pstack[m]);
+            } else {
+                cap += 1;
+            }
+            iter_link(s, s);
+        }
+        tl_setcap(data, cap);
         iter_link(s, r);
         while (!iter_eq(s, null_iter)) {
             halfword t = iter_info(s);

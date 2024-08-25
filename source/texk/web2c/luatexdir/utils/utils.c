@@ -684,6 +684,10 @@ void tl_remove_outer_braces(tl t) {
     arrpop(t->data);
 }
 
+void tl_setcap(tl t, size_t cap) {
+    arrsetcap(t->data, cap);
+}
+
 void tl_append(tl t, halfword tok) {
     assert(tl_is_valid(t));
     arrput(t->data, tok);

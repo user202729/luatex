@@ -51,6 +51,7 @@ tl tl_alloc(void);
 tl tl_clone(tl t);
 void tl_free(tl t);
 void tl_show(tl t, int l);
+void tl_setcap(tl t, size_t cap);
 tl tl_from_balanced_array(halfword *data);
 void tl_append(tl t, halfword tok);
 void tl_extend(tl t, tl u);
