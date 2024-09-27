@@ -41,7 +41,9 @@ authorization from the copyright holder.
 #define SYNCTEX_TAG_MODEL(NODE,TYPE)\
                     vinfo(NODE+TYPE##_node_size-synchronization_field_size)
 #define SYNCTEX_LINE_MODEL(NODE,TYPE)\
-                    vlink(NODE+TYPE##_node_size-synchronization_field_size)
+                    (vlink(NODE+TYPE##_node_size-synchronization_field_size)&0xFFFFFF)
+#define SYNCTEX_COLUMN_MODEL(NODE,TYPE)\
+                    ((int) ((unsigned int) vlink(NODE+TYPE##_node_size-synchronization_field_size)>>24))
 
 #define SYNCTEX_TYPE(NODE) type(NODE)
 #define SYNCTEX_SUBTYPE(NODE) subtype(NODE)

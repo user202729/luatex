@@ -205,7 +205,11 @@ mem[NODE+TYPE##_node_size-synchronization_field_size].cint
 #   endif
 #   if !defined(SYNCTEX_LINE_MODEL)
 #       define SYNCTEX_LINE_MODEL(NODE,TYPE)\
-mem[NODE+TYPE##_node_size-synchronization_field_size+1].cint
+(mem[NODE+TYPE##_node_size-synchronization_field_size+1].cint&0xFFFFFF)
+#   endif
+#   if !defined(SYNCTEX_COLUMN_MODEL)
+#       define SYNCTEX_COLUMN_MODEL(NODE,TYPE)\
+((unsigned int)mem[NODE+TYPE##_node_size-synchronization_field_size+1].cint>>24)
 #   endif
 /*  SYNCTEX_TAG_MODEL and SYNCTEX_LINE_MODEL are used to define
  *  SYNCTEX_TAG and SYNCTEX_LINE in a model independant way
@@ -417,7 +421,7 @@ static struct {
     synctex_recorder_t recorder;/*  the recorder of the node above, the
                                  *  routine that knows how to record the 
                                  *  node to the .synctex file */
-    integer tag, line;          /*  current tag and line  */
+    integer tag, line, column;  /*  current tag, line and column  */
     integer curh, curv;         /*  current point  */
     integer magnification;      /*  The magnification as given by \mag */
     integer unit;               /*  The unit, defaults to 1, use 8192 to produce shorter but less accurate info */
@@ -438,7 +442,7 @@ static struct {
         unsigned int reserved:SYNCTEX_BITS_PER_BYTE*sizeof(int)-8; /* Align */
     } flags;
 } synctex_ctxt = {
-    NULL, NULL, NULL, NULL, 0, 0, NULL, 0, 0, 0, 0, 0, 0, 0, 0, -1, 0, {0,0,0,0,0,0,0,0,0}}; /* last_v_recorded is initialized to -1. */
+    NULL, NULL, NULL, NULL, 0, 0, NULL, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 0, {0,0,0,0,0,0,0,0,0}}; /* last_v_recorded is initialized to -1. */
 
 #   define SYNCTEX_FILE synctex_ctxt.file
 #   define SYNCTEX_CONTENT_READY (synctex_ctxt.flags.content_ready)
@@ -1340,6 +1344,12 @@ void synctexpdfrefxform(int objnum)
 
 static inline void synctex_record_node_vlist(halfword p);
 
+#define SYNCTEX_SET_CONTEXT(NODE,TYPE) do { \
+    synctex_ctxt.tag = SYNCTEX_TAG_MODEL(NODE,TYPE); \
+    synctex_ctxt.line = SYNCTEX_LINE_MODEL(NODE,TYPE); \
+    synctex_ctxt.column = SYNCTEX_COLUMN_MODEL(NODE,TYPE); \
+    } while(false)
+
 /*  When an hlist ships out, it can contain many different kern/glue nodes with
  *  exactly the same sync tag and line.  To reduce the size of the .synctex
  *  file, we only display a kern node sync info when either the sync tag or the
@@ -1365,8 +1375,7 @@ void synctexvlist(halfword this_box)
     }
     synctex_ctxt.node = this_box;   /*  0 to reset  */
     synctex_ctxt.recorder = NULL;   /*  reset  */
-    synctex_ctxt.tag = SYNCTEX_TAG_MODEL(this_box,box);
-    synctex_ctxt.line = SYNCTEX_LINE_MODEL(this_box,box);
+    SYNCTEX_SET_CONTEXT(this_box,box);
     synctex_ctxt.curh = SYNCTEX_CURH;
     synctex_ctxt.curv = SYNCTEX_CURV;
     synctex_record_node_vlist(this_box);
@@ -1389,8 +1398,7 @@ void synctextsilv(halfword this_box)
     }
     /*  Ignoring any pending info to be recorded  */
     synctex_ctxt.node = this_box; /*  0 to reset  */
-    synctex_ctxt.tag = SYNCTEX_TAG_MODEL(this_box,box);
-    synctex_ctxt.line = SYNCTEX_LINE_MODEL(this_box,box);
+    SYNCTEX_SET_CONTEXT(this_box,box);
     synctex_ctxt.curh = SYNCTEX_CURH;
     synctex_ctxt.curv = SYNCTEX_CURV;
     synctex_ctxt.recorder = NULL;
@@ -1411,8 +1419,7 @@ void synctexvoidvlist(halfword p, halfword this_box __attribute__ ((unused)))
         return;
     }
     synctex_ctxt.node = p;          /*  reset  */
-    synctex_ctxt.tag = SYNCTEX_TAG_MODEL(p,box);
-    synctex_ctxt.line = SYNCTEX_LINE_MODEL(p,box);
+    SYNCTEX_SET_CONTEXT(p,box);
     synctex_ctxt.curh = SYNCTEX_CURH;
     synctex_ctxt.curv = SYNCTEX_CURV;
     synctex_ctxt.recorder = NULL;   /*  reset  */
@@ -1435,8 +1442,7 @@ void synctexhlist(halfword this_box)
         return;
     }
     synctex_ctxt.node = this_box;   /*  0 to reset  */
-    synctex_ctxt.tag = SYNCTEX_TAG_MODEL(this_box,box);
-    synctex_ctxt.line = SYNCTEX_LINE_MODEL(this_box,box);
+    SYNCTEX_SET_CONTEXT(this_box,box);
     synctex_ctxt.curh = SYNCTEX_CURH;
     synctex_ctxt.curv = SYNCTEX_CURV;
     synctex_ctxt.recorder = NULL;   /*  reset  */
@@ -1460,8 +1466,7 @@ void synctextsilh(halfword this_box)
     }
     /*  Ignoring any pending info to be recorded  */
     synctex_ctxt.node = this_box;     /*  0 to force next node to be recorded!  */
-    synctex_ctxt.tag = SYNCTEX_TAG_MODEL(this_box,box);
-    synctex_ctxt.line = SYNCTEX_LINE_MODEL(this_box,box);
+    SYNCTEX_SET_CONTEXT(this_box,box);
     synctex_ctxt.curh = SYNCTEX_CURH;
     synctex_ctxt.curv = SYNCTEX_CURV;
     synctex_ctxt.recorder = NULL;   /*  reset  */
@@ -1487,8 +1492,7 @@ void synctexvoidhlist(halfword p, halfword this_box __attribute__ ((unused)))
         (*synctex_ctxt.recorder) (synctex_ctxt.node);
     }
     synctex_ctxt.node = p;          /*  0 to reset  */
-    synctex_ctxt.tag = SYNCTEX_TAG_MODEL(p,box);
-    synctex_ctxt.line = SYNCTEX_LINE_MODEL(p,box);
+    SYNCTEX_SET_CONTEXT(p,box);
     synctex_ctxt.curh = SYNCTEX_CURH;
     synctex_ctxt.curv = SYNCTEX_CURV;
     synctex_ctxt.recorder = NULL;   /*  reset  */
@@ -1526,8 +1530,7 @@ void synctexmath(halfword p, halfword this_box __attribute__ ((unused)))
         (*synctex_ctxt.recorder) (synctex_ctxt.node);
     }
     synctex_ctxt.node = p;
-    synctex_ctxt.tag = SYNCTEX_TAG_MODEL(p,math);
-    synctex_ctxt.line = SYNCTEX_LINE_MODEL(p,math);
+    SYNCTEX_SET_CONTEXT(p,math);
     synctex_ctxt.curh = SYNCTEX_CURH;
     synctex_ctxt.curv = SYNCTEX_CURV;
     synctex_ctxt.recorder = NULL;/*  no need to record once more  */
@@ -1576,18 +1579,15 @@ void synctexhorizontalruleorglue(halfword p, halfword this_box
     synctex_ctxt.recorder = NULL;
     switch (SYNCTEX_TYPE(p)) {
         case rule_node:
-            synctex_ctxt.tag = SYNCTEX_TAG_MODEL(p,rule);
-            synctex_ctxt.line = SYNCTEX_LINE_MODEL(p,rule);
+            SYNCTEX_SET_CONTEXT(p,rule);
             synctex_record_node_rule(p); /*  always record synchronously: maybe some text is outside the box  */
             break;
         case glue_node:
-            synctex_ctxt.tag = SYNCTEX_TAG_MODEL(p,glue);
-            synctex_ctxt.line = SYNCTEX_LINE_MODEL(p,glue);
+            SYNCTEX_SET_CONTEXT(p,glue);
             synctex_record_node_glue(p); /*  always record synchronously: maybe some text is outside the box  */
             break;
         case kern_node:
-            synctex_ctxt.tag = SYNCTEX_TAG_MODEL(p,kern);
-            synctex_ctxt.line = SYNCTEX_LINE_MODEL(p,kern);
+            SYNCTEX_SET_CONTEXT(p,kern);
             synctex_record_node_kern(p); /*  always record synchronously: maybe some text is outside the box  */
             break;
         default:
@@ -1615,13 +1615,11 @@ void synctexkern(halfword p, halfword this_box)
         if (synctex_ctxt.node == this_box) {
             /* first node in the list */
             synctex_ctxt.node = p;
-            synctex_ctxt.tag = SYNCTEX_TAG_MODEL(p,kern);
-            synctex_ctxt.line = SYNCTEX_LINE_MODEL(p,kern);
+            SYNCTEX_SET_CONTEXT(p,kern);
             synctex_ctxt.recorder = &synctex_record_node_kern;
         } else {
             synctex_ctxt.node = p;
-            synctex_ctxt.tag = SYNCTEX_TAG_MODEL(p,kern);
-            synctex_ctxt.line = SYNCTEX_LINE_MODEL(p,kern);
+            SYNCTEX_SET_CONTEXT(p,kern);
             synctex_ctxt.recorder = NULL;
             /*  always record when the context has just changed
              *  and when not the first node  */
@@ -1630,8 +1628,7 @@ void synctexkern(halfword p, halfword this_box)
     } else {
         /*  just update the geometry and type (for future improvements)  */
         synctex_ctxt.node = p;
-        synctex_ctxt.tag = SYNCTEX_TAG_MODEL(p,kern);
-        synctex_ctxt.line = SYNCTEX_LINE_MODEL(p,kern);
+        SYNCTEX_SET_CONTEXT(p,kern);
         synctex_ctxt.recorder = &synctex_record_node_kern;
     }
 }
@@ -1699,12 +1696,12 @@ void synctexcurrent(void)
     } else {
         int len = 0;
         if (SYNCTEX_SHOULD_COMPRESS_V) {
-            len = SYNCTEX_fprintf(SYNCTEX_FILE, "x%i,%i:%i,=\n",
-                                  synctex_ctxt.tag,synctex_ctxt.line,
+            len = SYNCTEX_fprintf(SYNCTEX_FILE, "x%i,%i,%i:%i,=\n",
+                                  synctex_ctxt.tag,synctex_ctxt.line,synctex_ctxt.column,
                                   SYNCTEX_CURH UNIT);
         } else {
-            len = SYNCTEX_fprintf(SYNCTEX_FILE, "x%i,%i:%i,%i\n",
-                                  synctex_ctxt.tag,synctex_ctxt.line,
+            len = SYNCTEX_fprintf(SYNCTEX_FILE, "x%i,%i,%i:%i,%i\n",
+                                  synctex_ctxt.tag,synctex_ctxt.line,synctex_ctxt.column,
                                   SYNCTEX_CURH UNIT,
                                   SYNCTEX_CURV UNIT);
             synctex_ctxt.lastv = SYNCTEX_CURV;
@@ -1828,6 +1825,9 @@ static inline int synctex_record_sheet(integer sheet)
     return -1;
 }
 
+#define SYNCTEX_TAG_LINE_COLUMN(NODE,TYPE)\
+    SYNCTEX_TAG_MODEL(NODE,TYPE),SYNCTEX_LINE_MODEL(NODE,TYPE),SYNCTEX_COLUMN_MODEL(NODE,TYPE)
+
 /*  Recording a "v..." line  */
 static inline void synctex_record_node_void_vlist(halfword p)
 {
@@ -1836,17 +1836,15 @@ static inline void synctex_record_node_void_vlist(halfword p)
     printf("\nSynchronize DEBUG: synctex_record_node_void_vlist\n");
 #   endif
     if (SYNCTEX_SHOULD_COMPRESS_V) {
-        len = SYNCTEX_fprintf(SYNCTEX_FILE, "v%i,%i:%i,=:%i,%i,%i\n",
-                              SYNCTEX_TAG_MODEL(p,box),
-                              SYNCTEX_LINE_MODEL(p,box),
+        len = SYNCTEX_fprintf(SYNCTEX_FILE, "v%i,%i,%i:%i,=:%i,%i,%i\n",
+                              SYNCTEX_TAG_LINE_COLUMN(p,box),
                               SYNCTEX_CTXT_CURH UNIT,
                               SYNCTEX_WIDTH(p) UNIT,
                               SYNCTEX_HEIGHT(p) UNIT,
                               SYNCTEX_DEPTH(p) UNIT);
     } else {
-        len = SYNCTEX_fprintf(SYNCTEX_FILE, "v%i,%i:%i,%i:%i,%i,%i\n",
-                              SYNCTEX_TAG_MODEL(p,box),
-                              SYNCTEX_LINE_MODEL(p,box),
+        len = SYNCTEX_fprintf(SYNCTEX_FILE, "v%i,%i,%i:%i,%i:%i,%i,%i\n",
+                              SYNCTEX_TAG_LINE_COLUMN(p,box),
                               SYNCTEX_CTXT_CURH UNIT,
                               SYNCTEX_CTXT_CURV UNIT,
                               SYNCTEX_WIDTH(p) UNIT,
@@ -1874,17 +1872,15 @@ static inline void synctex_record_node_vlist(halfword p)
     printf("\nSynchronize DEBUG: synctex_record_node_vlist\n");
 #   endif
     if (SYNCTEX_SHOULD_COMPRESS_V) {
-        len = SYNCTEX_fprintf(SYNCTEX_FILE, "[%i,%i:%i,=:%i,%i,%i\n",
-                              SYNCTEX_TAG_MODEL(p,box),
-                              SYNCTEX_LINE_MODEL(p,box),
+        len = SYNCTEX_fprintf(SYNCTEX_FILE, "[%i,%i,%i:%i,=:%i,%i,%i\n",
+                              SYNCTEX_TAG_LINE_COLUMN(p,box),
                               SYNCTEX_CTXT_CURH UNIT,
                               SYNCTEX_WIDTH(p) UNIT,
                               SYNCTEX_HEIGHT(p) UNIT,
                               SYNCTEX_DEPTH(p) UNIT);
     } else {
-        len = SYNCTEX_fprintf(SYNCTEX_FILE, "[%i,%i:%i,%i:%i,%i,%i\n",
-                              SYNCTEX_TAG_MODEL(p,box),
-                              SYNCTEX_LINE_MODEL(p,box),
+        len = SYNCTEX_fprintf(SYNCTEX_FILE, "[%i,%i,%i:%i,%i:%i,%i,%i\n",
+                              SYNCTEX_TAG_LINE_COLUMN(p,box),
                               SYNCTEX_CTXT_CURH UNIT,
                               SYNCTEX_CTXT_CURV UNIT,
                               SYNCTEX_WIDTH(p) UNIT,
@@ -1918,17 +1914,15 @@ static inline void synctex_record_node_void_hlist(halfword p)
     printf("\nSynchronize DEBUG: synctex_record_node_void_hlist\n");
 #   endif
     if (SYNCTEX_SHOULD_COMPRESS_V) {
-        len = SYNCTEX_fprintf(SYNCTEX_FILE, "h%i,%i:%i,=:%i,%i,%i\n",
-                              SYNCTEX_TAG_MODEL(p,box),
-                              SYNCTEX_LINE_MODEL(p,box),
+        len = SYNCTEX_fprintf(SYNCTEX_FILE, "h%i,%i,%i:%i,=:%i,%i,%i\n",
+                              SYNCTEX_TAG_LINE_COLUMN(p,box),
                               SYNCTEX_CTXT_CURH UNIT,
                               SYNCTEX_WIDTH(p) UNIT,
                               SYNCTEX_HEIGHT(p) UNIT,
                               SYNCTEX_DEPTH(p) UNIT);
     } else {
-        len = SYNCTEX_fprintf(SYNCTEX_FILE, "h%i,%i:%i,%i:%i,%i,%i\n",
-                              SYNCTEX_TAG_MODEL(p,box),
-                              SYNCTEX_LINE_MODEL(p,box),
+        len = SYNCTEX_fprintf(SYNCTEX_FILE, "h%i,%i,%i:%i,%i:%i,%i,%i\n",
+                              SYNCTEX_TAG_LINE_COLUMN(p,box),
                               SYNCTEX_CTXT_CURH UNIT,
                               SYNCTEX_CTXT_CURV UNIT,
                               SYNCTEX_WIDTH(p) UNIT,
@@ -1950,17 +1944,15 @@ static inline void synctex_record_hlist(halfword p)
     printf("\nSynchronize DEBUG: synctex_record_hlist\n");
 #   endif
     if (SYNCTEX_SHOULD_COMPRESS_V) {
-        len = SYNCTEX_fprintf(SYNCTEX_FILE, "(%i,%i:%i,=:%i,%i,%i\n",
-                              SYNCTEX_TAG_MODEL(p,box),
-                              SYNCTEX_LINE_MODEL(p,box),
+        len = SYNCTEX_fprintf(SYNCTEX_FILE, "(%i,%i,%i:%i,=:%i,%i,%i\n",
+                              SYNCTEX_TAG_LINE_COLUMN(p,box),
                               SYNCTEX_CTXT_CURH UNIT,
                               SYNCTEX_WIDTH(p) UNIT,
                               SYNCTEX_HEIGHT(p) UNIT,
                               SYNCTEX_DEPTH(p) UNIT);
     } else {
-        len = SYNCTEX_fprintf(SYNCTEX_FILE, "(%i,%i:%i,%i:%i,%i,%i\n",
-                              SYNCTEX_TAG_MODEL(p,box),
-                              SYNCTEX_LINE_MODEL(p,box),
+        len = SYNCTEX_fprintf(SYNCTEX_FILE, "(%i,%i,%i:%i,%i:%i,%i,%i\n",
+                              SYNCTEX_TAG_LINE_COLUMN(p,box),
                               SYNCTEX_CTXT_CURH UNIT,
                               SYNCTEX_CTXT_CURV UNIT,
                               SYNCTEX_WIDTH(p) UNIT,
@@ -2034,14 +2026,12 @@ static inline void synctex_record_node_glue(halfword p)
     printf("\nSynchronize DEBUG: synctex_record_node_glue\n");
 #   endif
     if (SYNCTEX_SHOULD_COMPRESS_V) {
-        len = SYNCTEX_fprintf(SYNCTEX_FILE, "g%i,%i:%i,=\n",
-                              SYNCTEX_TAG_MODEL(p,glue),
-                              SYNCTEX_LINE_MODEL(p,glue),
+        len = SYNCTEX_fprintf(SYNCTEX_FILE, "g%i,%i,%i:%i,=\n",
+                              SYNCTEX_TAG_LINE_COLUMN(p,glue),
                               SYNCTEX_CTXT_CURH UNIT);
     } else {
-        len = SYNCTEX_fprintf(SYNCTEX_FILE, "g%i,%i:%i,%i\n",
-                              SYNCTEX_TAG_MODEL(p,glue),
-                              SYNCTEX_LINE_MODEL(p,glue),
+        len = SYNCTEX_fprintf(SYNCTEX_FILE, "g%i,%i,%i:%i,%i\n",
+                              SYNCTEX_TAG_LINE_COLUMN(p,glue),
                               SYNCTEX_CTXT_CURH UNIT,
                               SYNCTEX_CTXT_CURV UNIT);
         synctex_ctxt.lastv = SYNCTEX_CTXT_CURV;
@@ -2059,15 +2049,13 @@ static inline void synctex_record_node_kern(halfword p)
     printf("\nSynchronize DEBUG: synctex_record_node_kern\n");
 #   endif
     if (SYNCTEX_SHOULD_COMPRESS_V) {
-        len = SYNCTEX_fprintf(SYNCTEX_FILE, "k%i,%i:%i,=:%i\n",
-                              SYNCTEX_TAG_MODEL(p,glue),
-                              SYNCTEX_LINE_MODEL(p,glue),
+        len = SYNCTEX_fprintf(SYNCTEX_FILE, "k%i,%i,%i:%i,=:%i\n",
+                              SYNCTEX_TAG_LINE_COLUMN(p,glue),
                               SYNCTEX_CTXT_CURH UNIT,
                               SYNCTEX_WIDTH(p) UNIT);
     } else {
-        len = SYNCTEX_fprintf(SYNCTEX_FILE, "k%i,%i:%i,%i:%i\n",
-                              SYNCTEX_TAG_MODEL(p,glue),
-                              SYNCTEX_LINE_MODEL(p,glue),
+        len = SYNCTEX_fprintf(SYNCTEX_FILE, "k%i,%i,%i:%i,%i:%i\n",
+                              SYNCTEX_TAG_LINE_COLUMN(p,glue),
                               SYNCTEX_CTXT_CURH UNIT,
                               SYNCTEX_CTXT_CURV UNIT,
                               SYNCTEX_WIDTH(p) UNIT);
@@ -2086,15 +2074,13 @@ static inline void synctex_record_node_rule(halfword p)
     printf("\nSynchronize DEBUG: synctex_record_node_tsilh\n");
 #   endif
     if (SYNCTEX_SHOULD_COMPRESS_V) {
-        len = SYNCTEX_fprintf(SYNCTEX_FILE, "r%i,%i:%i,=:%i,%i,%i\n",
-                              SYNCTEX_TAG_MODEL(p,rule),
-                              SYNCTEX_LINE_MODEL(p,rule),
+        len = SYNCTEX_fprintf(SYNCTEX_FILE, "r%i,%i,%i:%i,=:%i,%i,%i\n",
+                              SYNCTEX_TAG_LINE_COLUMN(p,rule),
                               SYNCTEX_CTXT_CURH UNIT,
                               SYNCTEX_RULE_WD UNIT, SYNCTEX_RULE_HT UNIT, SYNCTEX_RULE_DP UNIT);
     } else {
-        len = SYNCTEX_fprintf(SYNCTEX_FILE, "r%i,%i:%i,%i:%i,%i,%i\n",
-                              SYNCTEX_TAG_MODEL(p,rule),
-                              SYNCTEX_LINE_MODEL(p,rule),
+        len = SYNCTEX_fprintf(SYNCTEX_FILE, "r%i,%i,%i:%i,%i:%i,%i,%i\n",
+                              SYNCTEX_TAG_LINE_COLUMN(p,rule),
                               SYNCTEX_CTXT_CURH UNIT,
                               SYNCTEX_CTXT_CURV UNIT,
                               SYNCTEX_RULE_WD UNIT, SYNCTEX_RULE_HT UNIT, SYNCTEX_RULE_DP UNIT);
@@ -2113,14 +2099,12 @@ void synctex_record_node_math(halfword p)
     printf("\nSynchronize DEBUG: synctex_record_node_math\n");
 #   endif
     if (SYNCTEX_SHOULD_COMPRESS_V) {
-        len = SYNCTEX_fprintf(SYNCTEX_FILE, "$%i,%i:%i,=\n",
-                              SYNCTEX_TAG_MODEL(p, math),
-                              SYNCTEX_LINE_MODEL(p, math),
+        len = SYNCTEX_fprintf(SYNCTEX_FILE, "$%i,%i,%i:%i,=\n",
+                              SYNCTEX_TAG_LINE_COLUMN(p, math),
                               SYNCTEX_CTXT_CURH UNIT);
     } else {
-        len = SYNCTEX_fprintf(SYNCTEX_FILE, "$%i,%i:%i,%i\n",
-                              SYNCTEX_TAG_MODEL(p, math),
-                              SYNCTEX_LINE_MODEL(p, math),
+        len = SYNCTEX_fprintf(SYNCTEX_FILE, "$%i,%i,%i:%i,%i\n",
+                              SYNCTEX_TAG_LINE_COLUMN(p, math),
                               SYNCTEX_CTXT_CURH UNIT,
                               SYNCTEX_CTXT_CURV UNIT);
         synctex_ctxt.lastv = SYNCTEX_CTXT_CURV;
@@ -2163,7 +2147,7 @@ void synctex_record_node_unknown(halfword p)
                               SYNCTEX_CTXT_CURH UNIT,
                               SYNCTEX_TYPE(p), SYNCTEX_SUBTYPE(p));
     } else {
-        len = SYNCTEX_fprintf(SYNCTEX_FILE, "?%i,%i:%i,%i\n",
+        len = SYNCTEX_fprintf(SYNCTEX_FILE, "?%i,%i,%i:%i,%i\n",
                               SYNCTEX_CTXT_CURH UNIT,
                               SYNCTEX_CTXT_CURV UNIT,
                               SYNCTEX_TYPE(p), SYNCTEX_SUBTYPE(p));

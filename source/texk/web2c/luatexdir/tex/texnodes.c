@@ -1697,6 +1697,32 @@ void synctex_set_line(int l)
     synctex_line_field = l;
 };
 
+static int compute_column()
+{
+    if (istate != token_list) {
+        return iloc - istart + 1;
+    }
+    for (int i = input_ptr; i--;) {
+        if (input_stack[i].state_field != token_list) {
+            return input_stack[i].loc_field - input_stack[i].start_field + 1;
+        }
+    }
+    return 0;
+}
+
+static int compute_synctex_line()
+{
+    int column = compute_column();
+    if (column < 0) column = 0;
+    if (column > 0xFF) column = 0xFF;
+    return (int) (((unsigned int) column) << 24 | ((unsigned int) line));
+}
+
+static int compute_synctex_possibly_forced_line()
+{
+    return forced_line ? forced_line : synctex_line_field ? synctex_line_field : compute_synctex_line();
+}
+
 /*tex |if_stack| is called a lot so maybe optimize that one. */
 
 halfword new_node(int i, int j)
@@ -1778,19 +1804,19 @@ halfword new_node(int i, int j)
             case glyph_node:
                 if (synctex_anyway_mode > 1) {
                     synctex_tag_glyph(n) = forced_tag ? forced_tag : cur_input.synctex_tag_field;
-                    synctex_line_glyph(n) = forced_line ? forced_line : synctex_line_field ? synctex_line_field : line;
+                    synctex_line_glyph(n) = compute_synctex_possibly_forced_line();
                 }
                 break;
             case glue_node:
                 if (synctex_anyway_mode < 4) {
                     synctex_tag_glue(n) = forced_tag ? forced_tag : cur_input.synctex_tag_field;
-                    synctex_line_glue(n) = forced_line ? forced_line : synctex_line_field ? synctex_line_field : line;
+                    synctex_line_glue(n) = compute_synctex_possibly_forced_line();
                 }
                 break;
             case kern_node:
                 if (synctex_anyway_mode < 3) {
                     synctex_tag_kern(n) = forced_tag ? forced_tag : cur_input.synctex_tag_field;
-                    synctex_line_kern(n) = forced_line ? forced_line : synctex_line_field ? synctex_line_field : line;
+                    synctex_line_kern(n) = compute_synctex_possibly_forced_line();
                 }
                 break;
             case hlist_node:
@@ -1799,20 +1825,20 @@ halfword new_node(int i, int j)
                 /*tex Rather useless: */
                 if (synctex_anyway_mode < 3) {
                     synctex_tag_box(n) = forced_tag ? forced_tag : cur_input.synctex_tag_field;
-                    synctex_line_box(n) = forced_line ? forced_line : synctex_line_field ? synctex_line_field : line;
+                    synctex_line_box(n) = compute_synctex_possibly_forced_line();
                 }
                 break;
             case rule_node:
                 if (synctex_anyway_mode < 3) {
                     synctex_tag_rule(n) = forced_tag ? forced_tag : cur_input.synctex_tag_field;
-                    synctex_line_rule(n) = forced_line ? forced_line : synctex_line_field ? synctex_line_field : line;
+                    synctex_line_rule(n) = compute_synctex_possibly_forced_line();
                 }
                 break;
             case math_node:
                 /*tex Noads probably make more sense but let's not change that. */
                 if (synctex_anyway_mode < 3) {
                     synctex_tag_math(n) = forced_tag ? forced_tag : cur_input.synctex_tag_field;
-                    synctex_line_math(n) = forced_line ? forced_line : synctex_line_field ? synctex_line_field : line;
+                    synctex_line_math(n) = compute_synctex_possibly_forced_line();
                 }
                 break;
         }
@@ -1821,27 +1847,27 @@ halfword new_node(int i, int j)
         switch (i) {
             case glue_node:
                 synctex_tag_glue(n) = cur_input.synctex_tag_field;
-                synctex_line_glue(n) = line;
+                synctex_line_glue(n) = compute_synctex_line();
                 break;
             case kern_node:
                 if (j != 0) {
                     synctex_tag_kern(n) = cur_input.synctex_tag_field;
-                    synctex_line_kern(n) = line;
+                    synctex_line_kern(n) = compute_synctex_line();
                 }
                 break;
             case hlist_node:
             case vlist_node:
             case unset_node:
                 synctex_tag_box(n) = cur_input.synctex_tag_field;
-                synctex_line_box(n) = line;
+                synctex_line_box(n) = compute_synctex_line();
                 break;
             case rule_node:
                 synctex_tag_rule(n) = cur_input.synctex_tag_field;
-                synctex_line_rule(n) = line;
+                synctex_line_rule(n) = compute_synctex_line();
                 break;
             case math_node:
                 synctex_tag_math(n) = cur_input.synctex_tag_field;
-                synctex_line_math(n) = line;
+                synctex_line_math(n) = compute_synctex_line();
                 break;
         }
     }
@@ -1861,7 +1887,7 @@ halfword raw_glyph_node(void)
     (void) memset((void *) (varmem + n + 1), 0, (sizeof(memory_word) * (glyph_node_size - 1)));
     if (synctex_anyway_mode > 1) {
         synctex_tag_glyph(n) = forced_tag ? forced_tag : cur_input.synctex_tag_field;
-        synctex_line_glyph(n) = forced_line ? forced_line : synctex_line_field ? synctex_line_field : line;
+        synctex_line_glyph(n) = compute_synctex_possibly_forced_line();
     }
     type(n) = glyph_node;
     subtype(n) = 0;
@@ -1874,7 +1900,7 @@ halfword new_glyph_node(void)
     (void) memset((void *) (varmem + n + 1), 0, (sizeof(memory_word) * (glyph_node_size - 1)));
     if (synctex_anyway_mode > 1) {
         synctex_tag_glyph(n) = forced_tag ? forced_tag : cur_input.synctex_tag_field;
-        synctex_line_glyph(n) = forced_line ? forced_line : synctex_line_field ? synctex_line_field : line;
+        synctex_line_glyph(n) = compute_synctex_possibly_forced_line();
     }
     type(n) = glyph_node;
     subtype(n) = 0;
@@ -2053,7 +2079,7 @@ halfword copy_node(const halfword p)
         if (t == glyph_node) {
             if (synctex_anyway_mode > 1) {
                 synctex_tag_glyph(r) = forced_tag ? forced_tag : cur_input.synctex_tag_field;
-                synctex_line_glyph(r) = forced_line ? forced_line : synctex_line_field ? synctex_line_field : line;
+                synctex_line_glyph(r) = compute_synctex_possibly_forced_line();
             }
         }
         \stoptyping
