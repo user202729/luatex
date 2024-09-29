@@ -498,6 +498,7 @@ void tprint(const char *sss)
                         t_flush_buffer(log_file,file_offset);
                     }
                 }
+                tally++;
             }
             if (*buffer) {
                 buffer[i++] = '\0';
