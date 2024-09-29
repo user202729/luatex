@@ -2060,14 +2060,14 @@ static inline void synctex_record_node_kern(halfword p)
 #   endif
     if (SYNCTEX_SHOULD_COMPRESS_V) {
         len = SYNCTEX_fprintf(SYNCTEX_FILE, "k%i,%i:%i,=:%i\n",
-                              SYNCTEX_TAG_MODEL(p,glue),
-                              SYNCTEX_LINE_MODEL(p,glue),
+                              SYNCTEX_TAG_MODEL(p,kern),
+                              SYNCTEX_LINE_MODEL(p,kern),
                               SYNCTEX_CTXT_CURH UNIT,
                               SYNCTEX_WIDTH(p) UNIT);
     } else {
         len = SYNCTEX_fprintf(SYNCTEX_FILE, "k%i,%i:%i,%i:%i\n",
-                              SYNCTEX_TAG_MODEL(p,glue),
-                              SYNCTEX_LINE_MODEL(p,glue),
+                              SYNCTEX_TAG_MODEL(p,kern),
+                              SYNCTEX_LINE_MODEL(p,kern),
                               SYNCTEX_CTXT_CURH UNIT,
                               SYNCTEX_CTXT_CURV UNIT,
                               SYNCTEX_WIDTH(p) UNIT);
