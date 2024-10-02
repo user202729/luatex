@@ -2029,6 +2029,9 @@ static boolean get_next_tokenlist(void)
     return true;
 }
 
+int start_tracing_tokens_loc, stop_tracing_tokens_loc;
+int tracing_tokens_par, tracing_tokens_ever_enabled;
+
 /*tex
 
     Now we're ready to take the plunge into |get_next| itself. Parts of this
@@ -2061,6 +2064,17 @@ void get_next(void)
         insert_vj_template();
         goto RESTART;
     }
+    if (start_tracing_tokens_loc > 0 && cur_cs == start_tracing_tokens_loc) {
+        tracing_tokens_par = 1;
+        tracing_tokens_ever_enabled = 1;
+        goto RESTART;
+    }
+    if (stop_tracing_tokens_loc > 0 && cur_cs == stop_tracing_tokens_loc) {
+        tracing_tokens_par = 0;
+        goto RESTART;
+    }
+    if (tracing_tokens_par)
+        printf("[[pop token %d]]", cur_cs == 0 ? token_val(cur_cmd, cur_chr) : cs_token_flag + cur_cs);
 }
 
 /*tex

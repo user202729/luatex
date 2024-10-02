@@ -502,6 +502,24 @@ Enter a new input level, save the old:
     nofilter = false; \
     incr(input_ptr);
 
+extern int tracing_tokens_par;
+
+void print_token_numbers(pointer p)
+{
+    for (pointer q = p; q != null; q = token_link(q)) {
+        printf("%d ", token_info(q));
+    }
+}
+
+void report_begin_token_list(pointer p, quarterword t)
+{
+    if (!tracing_tokens_par)
+        return;
+    printf("[[new token list %d ", (int) t);
+    print_token_numbers(p);
+    printf("]]");
+}
+
 /*tex
 
 Here is a procedure that starts a new level of token-list input, given a token
@@ -540,6 +558,9 @@ void begin_token_list(halfword p, quarterword t)
         }
     } else {
         iloc = p;
+    }
+    if (t != macro && t != parameter) {
+        report_begin_token_list(iloc, t);
     }
 }
 
@@ -613,6 +634,7 @@ void back_input(void)
     istart = p;
     token_type = backed_up;
     iloc = p;
+    report_begin_token_list(iloc, backed_up);
 }
 
 /*tex

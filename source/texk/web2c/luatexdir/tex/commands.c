@@ -23,6 +23,8 @@ with LuaTeX; if not, see <http://www.gnu.org/licenses/>.
 
 #include "ptexlib.h"
 
+extern int start_tracing_tokens_loc, stop_tracing_tokens_loc;
+
 /*tex
 
 The symbolic names for glue parameters are put into \TeX's hash table by using

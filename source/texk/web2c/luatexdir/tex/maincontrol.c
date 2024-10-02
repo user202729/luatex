@@ -1011,6 +1011,8 @@ static void init_main_control (void) {
     any_mode(combine_toks_cmd, combine_the_toks);
 }
 
+extern int tracing_tokens_par;
+
 /*tex
 
     And here is |main_control| itself.  It is quite short nowadays.
@@ -1048,6 +1050,8 @@ void main_control(void)
         if (main_control_state == goto_return) {
             return;
         }
+        if (tracing_tokens_par)
+            printf("[[exec]]");
     }
     /*tex not reached */
     return;

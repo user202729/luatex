@@ -371,6 +371,8 @@ handled by \LUA\ code and therefore not present in the format.
 
 int ready_already = 0;
 
+extern int start_tracing_tokens_loc, stop_tracing_tokens_loc, tracing_tokens_ever_enabled;
+
 int main_initialize(void)
 {
     /*
@@ -558,6 +560,17 @@ void main_body(void)
         while ((iloc < ilimit) && (buffer[iloc] == ' '))
             incr(iloc);
     }
+
+    assert(no_new_control_sequence);
+    no_new_control_sequence = false;
+#define string_lookup_1(A) string_lookup(A, strlen(A))
+    start_tracing_tokens_loc = string_lookup_1("starttracingtokens");
+    assert(start_tracing_tokens_loc > 0);
+    stop_tracing_tokens_loc = string_lookup_1("stoptracingtokens");
+    assert(stop_tracing_tokens_loc > 0);
+#undef string_lookup
+    no_new_control_sequence = true;
+
     if (output_mode_option != 0)
         output_mode_par = output_mode_value;
     if (draft_mode_option != 0) {
@@ -614,6 +627,61 @@ This program doesn't bother to close the input files that may still be open.
 
 void close_files_and_terminate(void)
 {
+    if (tracing_tokens_ever_enabled) {
+        /*tex
+
+        Print hash table to terminal for other program information.
+        This must be done here instead of in |main_body|, because this function
+        may be called in |jump_out| as well.
+
+        */
+        printf("[[hash_extra=%d]]", hash_extra);
+        printf("[[hash_used=%d]]", hash_used);
+        printf("[[hash_high=%d]]", hash_high);
+        printf("[[hash ");
+        int old_max_print_line = max_print_line;
+        max_print_line = INT_MAX;
+        for (int p = hash_base; p <= eqtb_size + hash_high; p++) {
+            if (p > hash_used && p <= eqtb_size) {
+                continue;
+            }
+            // p is pointer to address in eqtb, can be passed to print_cs
+            str_number t = cs_text(p);
+            if (t != 0) {
+                printf("%d ", p);
+                if (p < hash_base) {
+                    assert(false);
+                } else if ((p >= undefined_control_sequence) &&
+                        ((p <= eqtb_size) || p > eqtb_size + hash_extra)) {
+                    assert(false);
+                } else if (t >= str_ptr) {
+                    assert(false);
+                } else {
+                    if (is_active_cs(t)) {
+                        printf("a%d ", active_cs_value(t));
+                    } else {
+                        //print(t);
+                        if (t >= str_ptr) {
+                            assert(false);
+                        } else if (t < STRING_OFFSET) {
+                            if (t < 0) {
+                                assert(false);
+                            } else {
+                                printf("u%d ", t);
+                            }
+                            return;
+                        }
+                        lstring s = str_lstring(t);
+                        printf("s%d %*.*s", s.l, s.l, s.l, s.s);
+                    }
+                }
+            }
+        }
+        max_print_line = old_max_print_line;
+        printf("]]");
+        // TODO "]]" may collide with other things
+    }
+
     int callback_id;
     callback_id = callback_defined(stop_run_callback);
     finalize_write_files();

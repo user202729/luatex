@@ -61,6 +61,9 @@ static int expand_depth_count = 0;
 
 int is_in_csname = 0;
 
+extern void print_token_numbers(pointer p);
+extern int tracing_tokens_par;
+
 void expand(void)
 {
     /*tex token that is being ``expanded after'' */
@@ -85,6 +88,8 @@ void expand(void)
     radix_backup = radix;
     co_backup = cur_order;
     backup_backup = token_link(backup_head);
+    if (tracing_tokens_par)
+        printf("[[expand]]");
   RESWITCH:
     if (cur_cmd < call_cmd) {
         /*tex Expand a nonmacro. */
@@ -136,6 +141,8 @@ void expand(void)
                         back_input();
                     cur_tok = t;
                     back_input();
+                    if (tracing_tokens_par)
+                        printf("[[expandafter]]");
                 } else {
                     /*tex
 
@@ -184,6 +191,8 @@ void expand(void)
                         set_token_link(p, iloc);
                         istart = p;
                         iloc = p;
+                        if (tracing_tokens_par)
+                            printf("[[notexpanded]]");
                     }
 
                 } else {
@@ -372,6 +381,8 @@ void expand(void)
         cur_tok = cs_token_flag + frozen_endv;
         back_input();
     }
+    if (tracing_tokens_par)
+        printf("[[expand end]]");
     cur_val = cv_backup;
     cur_val_level = cvl_backup;
     radix = radix_backup;
@@ -490,7 +501,13 @@ void get_x_token(void)
         goto DONE;
     if (cur_cmd >= call_cmd) {
         if (cur_cmd < end_template_cmd) {
+            /*tex For consistency we print the below. They're printed if |macro_call|
+              is called in |expand| as well. */
+            if (tracing_tokens_par)
+                printf("[[expand]]");
             macro_call();
+            if (tracing_tokens_par)
+                printf("[[expand end]]");
         } else {
             cur_cs = frozen_endv;
             cur_cmd = endv_cmd;
@@ -663,6 +680,8 @@ void macro_call(void)
     }
     if (token_info(r) == protected_token)
         r = token_link(r);
+    if (tracing_tokens_par)
+        printf("[[start macro]]");
     if (token_info(r) != end_match_token) {
         /*tex
 
@@ -928,6 +947,17 @@ void macro_call(void)
     begin_token_list(ref_count, macro);
     iname = warning_index;
     iloc = token_link(r);
+
+    if (tracing_tokens_par) {
+        printf("[[macro");
+        print_token_numbers(iloc);
+        for (m = 0; m <= n - 1; m++) {
+            printf("|");
+            print_token_numbers(pstack[m]);
+        }
+        printf("]]");
+    }
+
     if (n > 0) {
         if (param_ptr + n > max_param_stack) {
             max_param_stack = param_ptr + n;
